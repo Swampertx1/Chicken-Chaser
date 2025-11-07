@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ScriptableObjects;
+using Unity.Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using Utilities;
 
 [RequireComponent(typeof(Grounding))]
-public class Chicken : MonoBehaviour, IControllable
+public class Chicken : NetworkBehaviour, IControllable
 {
     private Vector3 currentMoveDirection;
     private Rigidbody rb;
@@ -23,6 +25,7 @@ public class Chicken : MonoBehaviour, IControllable
     [SerializeField] private float mouseSensitivity = 1;
     [SerializeField, Range(0,89.9f)] private float maxPitch = 80;
     private InteractibleObject interactibleObj;
+  [SerializeField]  private CinemachineCamera playerCamera;
     public InteractibleObject InteractibleObj => interactibleObj;
     public event Action onInteractibleObjectChanged;
     
@@ -38,11 +41,28 @@ public class Chicken : MonoBehaviour, IControllable
     {
         rb = GetComponent<Rigidbody>();
         grounding = GetComponent<Grounding>();
-        Controller.BindController(this);
+       
 #if !UNITY_EDITOR
      delay = new WaitForSeconds(jumpCooldown);
 #endif
        
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        
+       
+        enabled = IsOwner;
+        if (IsOwner)
+        {
+            Controller.BindController(this);
+        }
+
+        if (!IsLocalPlayer)
+        {
+            playerCamera.enabled = false;
+        }
+     
     }
 
     private void Update()

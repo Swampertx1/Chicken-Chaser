@@ -1,0 +1,62 @@
+{
+    "name": "GabesCommonUtility.Multiplayer.GameObjects.Sequencing",
+    "rootNamespace": "GabesCommonUtility",
+    "references": [
+        "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
+        "Eflatun.SceneReference",
+        "UniTask",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.Multiplayer",
+        "GabesCommonUtility.Sequence",
+        "Unity.TextMeshPro",
+        "ParrelSync",
+        "GabesCommonUtility.Multiplayer.GameObjects"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "",
+            "define": "UNITY_NETCODE_GAMEOBJECTS"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UNITASK"
+        },
+        {
+            "name": "com.eflatun.scenereference",
+            "expression": "",
+            "define": "SCENE_REFERENCE"
+        },
+        {
+            "name": "com.unity.services.core",
+            "expression": "",
+            "define": "UNITY_SERVICES"
+        },
+        {
+            "name": "com.unity.services.lobbies",
+            "expression": "",
+            "define": "UNITY_LOBBIES"
+        },
+        {
+            "name": "com.unity.services.relay",
+            "expression": "",
+            "define": "UNITY_RELAY"
+        },
+        {
+            "name": "com.veriorpies.parrelsync",
+            "expression": "",
+            "define": "PARREL_SYNC"
+        }
+    ],
+    "noEngineReferences": false
+}

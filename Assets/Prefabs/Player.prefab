@@ -209,7 +209,7 @@ Transform:
   m_GameObject: {fileID: 4450424102145099836}
   serializedVersion: 2
   m_LocalRotation: {x: 0.017016122, y: -0.000000007597016, z: -1.4564183e-11, w: 0.9998552}
-  m_LocalPosition: {x: -0.5, y: 0.862823, z: -1.9852309}
+  m_LocalPosition: {x: -0.5, y: 0.862823, z: -1.9852308}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -294,8 +294,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3199869485871651065}
   - component: {fileID: 1890533995272224635}
+  - component: {fileID: 6960144070719844066}
   - component: {fileID: 8401529164211304087}
   - component: {fileID: 4454101977502422255}
+  - component: {fileID: 8963538229177760629}
+  - component: {fileID: 809461647961312687}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -340,10 +343,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Grounding
   foot: {fileID: 821473674308985966}
   groundedRadius: 0.05
-  maxGroundedRadius: 0.5
+  maxGroundedRadius: 0.3
   groundMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &6960144070719844066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662061587206153138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 548099043
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &8401529164211304087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,16 +384,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18a042bd3c0afd7448177ba3b75be36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chicken
-  jumpCooldown: 0.2
-  moveSpeed: 1
-  jumpForce: 5
-  maxSpeed: 2
+  ShowTopMostFoldoutHeaderGroup: 1
   head: {fileID: 2734304907029226763}
+  chickenStats: {fileID: 11400000, guid: e95017d3c1f4e164c873cb00c69f9b93, type: 2}
   body: {fileID: 3199869485871651065}
   cam: {fileID: 7231711947200562494}
   mouseSensitivity: 0.5
   maxPitch: 80
-  maxRaycastDistance: 5
+  playerCamera: {fileID: 128586403900476690}
 --- !u!54 &4454101977502422255
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -393,6 +419,69 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &8963538229177760629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662061587206153138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da52bf8bbc1de48cfb221a6ff30f7972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Multiplayer.Center.NetcodeForGameObjectsExample::Unity.Multiplayer.Center.NetcodeForGameObjectsExample.ClientNetworkTransform
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 1
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 1
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 1
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 1
+--- !u!114 &809461647961312687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662061587206153138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkRigidbody
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkRigidbodyBaseExpanded: 0
+  UseRigidBodyForMotion: 1
+  AutoUpdateKinematicState: 1
+  AutoSetKinematicOnDespawn: 1
 --- !u!1 &8273480113772969671
 GameObject:
   m_ObjectHideFlags: 0

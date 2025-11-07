@@ -1,0 +1,19 @@
+{
+    "name": "GabesCommonUtility.UI.Text",
+    "rootNamespace": "GabesCommonUtility",
+    "references": [
+        "Unity.TextMeshPro",
+        "GabesCommonUtility.Extensions",
+        "UniTask"
+
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

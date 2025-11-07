@@ -1,0 +1,37 @@
+{
+    "name": "GabesCommonUtility.Multiplayer.Vivox",
+    "rootNamespace": "GabesCommonUtility",
+    "references": [
+        "Unity.Netcode.Runtime",
+        "GabesCommonUtility.Sequence",
+        "GabesCommonUtility.Multiplayer.GameObjects",
+        "Unity.Services.Authentication",
+        "UniTask",
+        "Unity.Services.Vivox"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "",
+            "define": "UNITY_NETCODE_GAMEOBJECTS"
+        },
+        {
+            "name": "com.unity.services.vivox",
+            "expression": "",
+            "define": "VIVOX"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UNITASK"
+        }
+    ],
+    "noEngineReferences": false
+}

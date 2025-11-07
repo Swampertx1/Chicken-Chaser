@@ -1,0 +1,23 @@
+{
+  "name": "GabesCommonUtility.Runtime",
+  "rootNamespace": "GabesCommonUtility",
+  "references": [
+    "Unity.TextMeshPro",
+    "Unity.Animation.Rigging"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.animation.rigging",
+      "expression": "",
+      "define": "UNITY_ANIMATION_RIGGING"
+    }
+  ],
+  "noEngineReferences": false
+}

@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InteractibleObject : MonoBehaviour
+public class InteractibleObject : NetworkBehaviour
 {
     [SerializeField] private UnityEvent onInteract;
     

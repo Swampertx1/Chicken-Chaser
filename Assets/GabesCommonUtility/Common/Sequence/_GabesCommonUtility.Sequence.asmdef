@@ -1,0 +1,28 @@
+{
+    "name": "GabesCommonUtility.Sequence",
+    "rootNamespace": "GabesCommonUtility",
+    "references": [
+        "Eflatun.SceneReference",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UNITASK"
+        },
+        {
+            "name": "com.eflatun.scenereference",
+            "expression": "",
+            "define": "SCENE_REFERENCE"
+        }
+    ],
+    "noEngineReferences": false
+}

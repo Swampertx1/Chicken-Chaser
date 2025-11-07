@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1378544d7e6e7cb40862d7a8335be81d, type: 3}
   m_Name: ChickenStats
   m_EditorClassIdentifier: Assembly-CSharp::ScriptableObjects.ChickenStats
-  maxSpeed: 0
-  moveSpeed: 0
-  jumpCooldown: 0
-  jumpForce: 0
-  maxRaycastDistance: 0
+  maxSpeed: 2.5
+  moveSpeed: 2
+  jumpCooldown: 0.2
+  jumpForce: 6.7
+  maxRaycastDistance: 4
