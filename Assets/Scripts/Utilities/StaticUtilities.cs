@@ -1,11 +1,32 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Utilities
 {
     public static class StaticUtilities
     {
+       
+        /// </summary>
+        /// <typeparam name="T">The type of the array elements.</typeparam>
+        /// <param name="array">The array to shuffle.</param>
+        public static void Shuffle<T>(this T[] array)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            int n = array.Length;
+            for (int i = n - 1; i > 0; i--)
+            {
+                // UnityEngine.Random.Range is min inclusive and max exclusive.
+                int j = Random.Range(0, i + 1);
+
+                // Swap elements
+                (array[i], array[j]) = (array[j], array[i]);
+            }
+        }
         public static readonly int WallLayer = 1 << LayerMask.NameToLayer("Default");
         
         public static readonly int WaterLayer = 1 << LayerMask.NameToLayer("Water");
@@ -42,6 +63,22 @@ namespace Utilities
 
 
         public static readonly int FillMatID = Shader.PropertyToID("_Fill");
+
+        public static IEnumerator AnimateLocalScale(this Transform target, Vector3 start, Vector3 end, float duration,
+            AnimationCurve curve)
+        {float curTime = 0;
+            while (curTime < duration)
+            {
+                
+                float percent = curTime / duration;
+                curTime += Time.deltaTime;
+                target.localScale = Vector3.LerpUnclamped(start, end, curve.Evaluate(percent));
+          
+                yield return null;
+            }
+          target.localScale = end;
+          
+        }
         
         //The "this" keyword will allow us to say source.TransitionSound anywhere.
         /// <summary>
