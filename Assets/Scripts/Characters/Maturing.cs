@@ -29,7 +29,7 @@ public class Maturing : InteractibleObject
      
   }
 
-     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+  [Rpc(SendTo.ClientsAndHost,  InvokePermission = RpcInvokePermission.Everyone)]
   private void onInteract_ServerRpc(ulong id)
   {
       if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(id, out var networkObject))
@@ -43,6 +43,7 @@ public class Maturing : InteractibleObject
   }
   
   
+  
 
  
 
@@ -52,7 +53,8 @@ public class Maturing : InteractibleObject
       Vector3 startSize = player.localScale;
       Vector3 endSize = player.localScale * playerScale;
       yield return player.AnimateLocalScale(startSize, endSize, playerGrowingAnim, growAnimationCurve);
-      SpawnParticles_ClientRpc(player.position, player.rotation,player.localScale);
+      if(HasAuthority)
+        SpawnParticles_ClientRpc(player.position, player.rotation,player.localScale);
     yield return new WaitForSeconds(secondsUntilUnMature);
       yield return player.AnimateLocalScale(endSize, startSize, playerShrinkAnim, shrinkAnimationCurve);
   }
