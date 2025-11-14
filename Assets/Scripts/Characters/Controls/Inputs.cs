@@ -127,6 +127,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Grenade"",
+                    ""type"": ""Button"",
+                    ""id"": ""81fe346c-42b0-4b95-86c3-11e9b2d4f1b0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -217,6 +226,17 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""Collect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""559356dc-9558-433e-88d2-137b70ceadbf"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grenade"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -285,6 +305,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Collect = m_Player.FindAction("Collect", throwIfNotFound: true);
+        m_Player_Grenade = m_Player.FindAction("Grenade", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Newaction = m_UI.FindAction("New action", throwIfNotFound: true);
@@ -377,6 +398,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Collect;
+    private readonly InputAction m_Player_Grenade;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -404,6 +426,10 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Collect".
         /// </summary>
         public InputAction @Collect => m_Wrapper.m_Player_Collect;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Grenade".
+        /// </summary>
+        public InputAction @Grenade => m_Wrapper.m_Player_Grenade;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -442,6 +468,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Collect.started += instance.OnCollect;
             @Collect.performed += instance.OnCollect;
             @Collect.canceled += instance.OnCollect;
+            @Grenade.started += instance.OnGrenade;
+            @Grenade.performed += instance.OnGrenade;
+            @Grenade.canceled += instance.OnGrenade;
         }
 
         /// <summary>
@@ -465,6 +494,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Collect.started -= instance.OnCollect;
             @Collect.performed -= instance.OnCollect;
             @Collect.canceled -= instance.OnCollect;
+            @Grenade.started -= instance.OnGrenade;
+            @Grenade.performed -= instance.OnGrenade;
+            @Grenade.canceled -= instance.OnGrenade;
         }
 
         /// <summary>
@@ -725,6 +757,13 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCollect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Grenade" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGrenade(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

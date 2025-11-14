@@ -14,8 +14,6 @@ public class Chicken : NetworkBehaviour, IControllable
     private Rigidbody rb;
     private Grounding grounding;
 
-    
-    
     [Header("Rotation")] 
     [SerializeField] private Transform head;
 
@@ -25,12 +23,16 @@ public class Chicken : NetworkBehaviour, IControllable
     [SerializeField] private float mouseSensitivity = 1;
     [SerializeField, Range(0,89.9f)] private float maxPitch = 80;
     private InteractibleObject interactibleObj;
-  [SerializeField]  private CinemachineCamera playerCamera;
+    [SerializeField] private CinemachineCamera playerCamera;
+    
+    [Header("Grenade")]
+    [SerializeField] private NetworkObject grenadePrefab;
+    [SerializeField] private float grenadeThrowForce = 15f;
+    [SerializeField] private float grenadeCooldown = 2f;
+    private NetworkVariable<bool> canThrowGrenade = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
     public InteractibleObject InteractibleObj => interactibleObj;
     public event Action onInteractibleObjectChanged;
-    
-    
-    
     
     private Coroutine jumpCoroutine;
     #if !UNITY_EDITOR
@@ -43,15 +45,13 @@ public class Chicken : NetworkBehaviour, IControllable
         grounding = GetComponent<Grounding>();
        
 #if !UNITY_EDITOR
-     delay = new WaitForSeconds(jumpCooldown);
+        delay = new WaitForSeconds(chickenStats.JumpCooldown);
 #endif
        
     }
 
     public override void OnNetworkSpawn()
     {
-        
-       
         enabled = IsOwner;
         if (IsOwner)
         {
@@ -62,20 +62,72 @@ public class Chicken : NetworkBehaviour, IControllable
         {
             playerCamera.enabled = false;
         }
-     
     }
+    
+    
 
     private void Update()
     {
         HandleObjectDetection();
     }
 
+    public void ThrowGrenadeInput()
+    {
+     ThrowGrenade_ServerRpc();  
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+
+    private void ThrowGrenade_ServerRpc(RpcParams param = default)
+    {
+        if (canThrowGrenade.Value)
+        {
+            ThrowGrenade(param.Receive.SenderClientId);
+        } 
+    }
+
+    private void ThrowGrenade(ulong id)
+    {
+        Debug.Log("ThrowGrenade() called!");
+        
+        if (grenadePrefab == null)
+        {
+            Debug.LogWarning("Grenade prefab is not assigned!");
+            return;
+        }
+
+        Debug.Log("Grenade prefab is assigned, spawning grenade...");
+
+        // Determine spawn position (use grenadeSpawnPoint if assigned, otherwise use camera)
+        Vector3 spawnPos =  cam.position;
+        Vector3 throwDirection = cam.forward;
+
+        Debug.Log("Spawn Position: " + spawnPos + " | Direction: " + throwDirection);
+
+        // Instantiate grenade
+        var grenade = Instantiate(grenadePrefab, spawnPos, Quaternion.identity);
+        grenade.SpawnWithOwnership(id, this);
+        Rigidbody grenaderb = grenade.GetComponent<Rigidbody>();
+        Debug.Log("Grenade instantiated: " + grenaderb.name);
+        
+        // Apply force to grenade
+        grenaderb.AddForce(throwDirection * grenadeThrowForce, ForceMode.Impulse);
+
+        // Start cooldown
+        StartCoroutine(GrenadeCooldown());
+    }
+
+    private IEnumerator GrenadeCooldown()
+    {
+        canThrowGrenade.Value = false;
+        yield return new WaitForSeconds(grenadeCooldown);
+        canThrowGrenade.Value = true;
+    }
+
     private void HandleObjectDetection()
     {
         if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, chickenStats.MaxRaycastDistance, StaticUtilities.EverythingButChicken))
         {
-            // The ray hit an object, so now we destroy it
-          //  Debug.Log("Raycast hit and 'E' key pressed. Destroying object: " + hit.transform.name);
             if ((hit.rigidbody && hit.rigidbody.TryGetComponent(out InteractibleObject interactible)) ||
                 hit.transform.TryGetComponent(out interactible))
             { 
@@ -86,7 +138,7 @@ public class Chicken : NetworkBehaviour, IControllable
                 return;
             }
         }
-        if (!interactibleObj ) return;
+        if (!interactibleObj) return;
         interactibleObj = null;
         onInteractibleObjectChanged?.Invoke();
     }
@@ -94,10 +146,7 @@ public class Chicken : NetworkBehaviour, IControllable
     private void FixedUpdate()
     {
         MovePlayer();
-       
-        
     }
-    
 
     private void MovePlayer()
     {
@@ -112,30 +161,30 @@ public class Chicken : NetworkBehaviour, IControllable
             rb.linearVelocity = new Vector3(direction.x * chickenStats.MaxSpeed, direction.y, direction.z * chickenStats.MaxSpeed);
         }
     }
+    
     public void Move(Vector2 direction)
     {
        currentMoveDirection = new Vector3(direction.x, 0, direction.y);
-       
     }
 
     public void Look(Vector2 direction)
     {
-     direction *= mouseSensitivity;
-     body.Rotate(Vector3.up, direction.x);
-     float pitch = head.localEulerAngles.x + direction.y;
+        direction *= mouseSensitivity;
+        body.Rotate(Vector3.up, direction.x);
+        float pitch = head.localEulerAngles.x + direction.y;
      
-     if (pitch > maxPitch && pitch < 180)
-         pitch = maxPitch;
-     else if (pitch < 360 - maxPitch && pitch > 180)
-         pitch = 360-maxPitch;
+        if (pitch > maxPitch && pitch < 180)
+            pitch = maxPitch;
+        else if (pitch < 360 - maxPitch && pitch > 180)
+            pitch = 360-maxPitch;
          
-     Debug.Log(pitch);
-     head.localEulerAngles = new Vector3(pitch, 0, 0);
+        Debug.Log(pitch);
+        head.localEulerAngles = new Vector3(pitch, 0, 0);
     }
 
     public void Jump()
     {
-        if (!CanJump())  return;
+        if (!CanJump()) return;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * chickenStats.JumpForce, ForceMode.Impulse);
         jumpCoroutine = StartCoroutine(JumpCooldown());
@@ -149,47 +198,38 @@ public class Chicken : NetworkBehaviour, IControllable
     private IEnumerator JumpCooldown()
     {
 #if !UNITY_EDITOR
-    yield return delay;
-    #else
+        yield return delay;
+#else
         yield return new WaitForSeconds(chickenStats.JumpCooldown);
 #endif
-       jumpCoroutine = null;
+        jumpCoroutine = null;
     }
 
     public bool CanJump()
     {
-        return grounding.IsGrounded && jumpCoroutine ==  null;
+        return grounding.IsGrounded && jumpCoroutine == null;
     }
+    
     private void OnDrawGizmos()
     {
         if (cam == null) return;
 
-        // Set the starting point and direction
         Vector3 origin = cam.position;
         Vector3 direction = cam.forward;
 
-        // Check if the raycast hits something
         if (Physics.Raycast(origin, direction, out RaycastHit hit, chickenStats.MaxRaycastDistance, StaticUtilities.EverythingButChicken))
         {
-            // Ray hit something - draw in green to the hit point
             Gizmos.color = Color.green;
             Gizmos.DrawLine(origin, hit.point);
-        
-            // Draw a sphere at the hit point
             Gizmos.DrawWireSphere(hit.point, 0.1f);
-        
-            // Optionally draw the remaining distance in yellow
+            
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(hit.point, origin + direction * chickenStats.MaxRaycastDistance);
         }
         else
         {
-            // Ray didn't hit anything - draw in red for the full distance
             Gizmos.color = Color.red;
             Gizmos.DrawLine(origin, origin + direction * chickenStats.MaxRaycastDistance);
         }
     }
-
- 
-    
 }

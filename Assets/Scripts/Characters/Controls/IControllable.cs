@@ -6,8 +6,7 @@ public interface IControllable
 {
     public void Move(Vector2 direction);
     public void Look(Vector2 direction);
-    
-    
     public void Jump();
-    void Collect();
+    public void Collect();
+    public void ThrowGrenadeInput(); // Add this line
 }

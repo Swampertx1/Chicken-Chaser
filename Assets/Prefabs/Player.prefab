@@ -392,6 +392,10 @@ MonoBehaviour:
   mouseSensitivity: 0.5
   maxPitch: 80
   playerCamera: {fileID: 128586403900476690}
+  grenadePrefab: {fileID: -3054669219373852787, guid: 141adb5297521184e9c93ec8594178b5,
+    type: 3}
+  grenadeThrowForce: 15
+  grenadeCooldown: 2
 --- !u!54 &4454101977502422255
 Rigidbody:
   m_ObjectHideFlags: 0
