@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7523360747577743736}
   - component: {fileID: 5200537535449119038}
   - component: {fileID: 1369291113110884034}
+  - component: {fileID: 5333659841870829160}
   m_Layer: 5
   m_Name: LobbyPlayerInstance
   m_TagString: Untagged
@@ -137,3 +138,56 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 1
           m_CallState: 2
+--- !u!114 &5333659841870829160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5316287854587642232}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16ff2daec8065cc4e91f4bb5fee17fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChickenLightUp
+  chickenLightUpImaged: {fileID: 7523360747577743736}
+  chickenLightUpColor: {r: 1, g: 1, b: 1, a: 1}
+  chickenLonelyColor: {r: 0.4339623, g: 0.41963333, b: 0.41963333, a: 1}
+  chickenLightUpAnimationSpeed: 0.7
+  chickenStartSize: {x: 1, y: 1, z: 1}
+  chickenEndSize: {x: 2, y: 2, z: 2}
+  growAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.4611329
+      value: 1.0448179
+      inSlope: 0.69806653
+      outSlope: 0.69806653
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  chickenLightUpSound: {fileID: 8300000, guid: 761464fb3d7bf1647ba8b1cb0cdabf9b, type: 3}
+  chickenLightUpAudioSource: {fileID: 0}

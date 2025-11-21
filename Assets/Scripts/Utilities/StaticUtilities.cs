@@ -76,7 +76,7 @@ namespace Utilities
           
                 yield return null;
             }
-          target.localScale = end;
+          target.localScale = Vector3.LerpUnclamped(start, end, curve.Evaluate(1));
           
         }
         
