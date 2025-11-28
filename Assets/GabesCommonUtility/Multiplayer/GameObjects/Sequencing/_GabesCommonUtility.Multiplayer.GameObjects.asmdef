@@ -12,7 +12,8 @@
         "GabesCommonUtility.Sequence",
         "Unity.TextMeshPro",
         "ParrelSync",
-        "GabesCommonUtility.Multiplayer.GameObjects"
+        "GabesCommonUtility.Multiplayer.GameObjects",
+        "GabesCommonUtility.Game"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

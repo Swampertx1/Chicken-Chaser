@@ -178,7 +178,6 @@ public class Chicken : NetworkBehaviour, IControllable
         else if (pitch < 360 - maxPitch && pitch > 180)
             pitch = 360-maxPitch;
          
-        Debug.Log(pitch);
         head.localEulerAngles = new Vector3(pitch, 0, 0);
     }
 

@@ -7,40 +7,45 @@ namespace Niche_Things
     public class NetowkredLobbyController : MonoBehaviour
     {
         [SerializeField] private ChickenLightUp[] chickensInGame;
+        [SerializeField] private GameObject[] hostOnlyButtons;
         private void OnEnable()
         {
-            Homework();
-         UpdateButtons(null);
-         LobbySystem.Instance.Events.LobbyChanged +=  UpdateButtons;
+            UpdateButtons(null);
+            LobbySystem.Instance.Events.LobbyChanged +=  UpdateButtons;
+            LobbySystem.Instance.Events.LobbyEventConnectionStateChanged += LobbyEventConnectionChanged;
+        }
+
+        private void LobbyEventConnectionChanged(LobbyEventConnectionState obj)
+        {
+            Debug.Log("Lobby state connection has changed: " + obj);
+            UpdateButtons(null);
         }
 
         private void OnDisable()
         {
             LobbySystem.Instance.Events.LobbyChanged -=  UpdateButtons;
+            LobbySystem.Instance.Events.LobbyEventConnectionStateChanged -= LobbyEventConnectionChanged;
+
         }
 
         private void UpdateButtons(ILobbyChanges obj)
         {
-            
-       
+            if (LobbySystem.Instance.CurrentLobby == null) return;
+            Debug.Log("Lobby has changed... Updating Buttons");
             for (int i = chickensInGame.Length -1; i >= 0 ; i -= 1)
             {
-                chickensInGame[i].enabled = LobbySystem.Instance.CurrentLobby.Players.Count > i;
+                chickensInGame[i].enabled = i< LobbySystem.Instance.CurrentLobby.Players.Count;
                 //  Debug.Log("Saint "+i);
+            }
+
+            foreach (GameObject g in hostOnlyButtons)
+            {
+                g.SetActive(LobbySystem.Instance.IsHost());
             }
             
            
         }
 
-        private void Homework()
-        {
-            //Starting at 0, counting until 10, increasing by 1.
-            for(int i = 0; i < 10; i+=1)
-            {
-                Debug.Log("idk" + i);
-            }
-        }
-    
     
     }
 }

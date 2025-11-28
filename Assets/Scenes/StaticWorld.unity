@@ -2773,58 +2773,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be841782567c51e489711515560194ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeTime: 0.5
-  openTime: 1
-  closeCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  openCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -0.086457595
-      outSlope: -0.086457595
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.18140626
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -2.45822
-      outSlope: -2.45822
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.09296876
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   intendedDelay: 3
-  canvas: {fileID: 1473716592}
+  loadingSceneIndex: 3
   source: {fileID: 644101303}
   roundStart: {fileID: 8300000, guid: c3220e9598394bc41b2659012eb94118, type: 3}
   stealthMusic: {fileID: 8300000, guid: 0048929ecdaed9d47b55c3674102a5f2, type: 3}

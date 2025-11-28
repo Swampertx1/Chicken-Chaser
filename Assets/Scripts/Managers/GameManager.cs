@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utilities;
+using GabesCommonUtility;
 
 namespace Managers
 {
@@ -16,14 +17,10 @@ namespace Managers
     
         public static bool InGame => Instance._inGame;
 
-        [SerializeField] private float closeTime;
-        [SerializeField] private float openTime;
-        [SerializeField] private AnimationCurve closeCurve;
-        [SerializeField] private AnimationCurve openCurve;
-
         [SerializeField] private float intendedDelay = 1;
     
-        [SerializeField] private GameObject canvas;
+        [SerializeField] private int loadingSceneIndex = 3; // Index of the loading scene
+        
         //Honestly, this should be in another script, but I cant be bothered.
         [Header("Sounds")]
         [SerializeField] private AudioSource source;
@@ -42,12 +39,7 @@ namespace Managers
 
         public static readonly Dictionary<string, AudioVolumeRangeSet> SoundsDictionary =
             new Dictionary<string, AudioVolumeRangeSet>();
-        
-        private GameObject _textBlocks;
-        private Material _transition;
-        
 
-        private bool _initialized;
         private const float StartTime = 6.4f;
 
         public static int NumChickens { get; private set; }
@@ -65,13 +57,8 @@ namespace Managers
             DontDestroyOnLoad(gameObject);
             Instance = this;
 
-            _transition = canvas.transform.GetChild(0).GetComponent<Image>().material;
-            _textBlocks = canvas.transform.GetChild(0).GetChild(0).gameObject;
-
             source.time = StartTime;
             
-            
-
             SettingsManager.SaveFile.onMusicVolumeChanged += x =>
             {
                 source.volume = x;
@@ -85,25 +72,44 @@ namespace Managers
 
             toMainMenu.gameObject.SetActive(false);
             quitGame.gameObject.SetActive(false);
+            
             //Because the first scene counts as nothing :)
             #if !UNITY_EDITOR
             if (SceneManager.loadedSceneCount <= 1)
-                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive).completed += _ => 
-                    StartCoroutine( TransitionScreen(closeTime, closeCurve, false));
+            {
+                StartCoroutine(InitialSceneLoad());
+            }
             
             toMainMenu.gameObject.SetActive(false);
             #if !UNITY_WEBGL // You can't do this in webgl
             quitGame.gameObject.SetActive(true);
             #endif
             #endif
+        }
 
+        private IEnumerator InitialSceneLoad()
+        {
+            // Load loading screen
+            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
+            
+            // Wait for LoadingScreen to initialize
+            yield return new WaitUntil(() => LoadingScreen.Instance != null);
+            
+            // Load main menu
+            yield return SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+            
+            // Close transition (reveal main menu)
+            LoadingScreen.Instance.PlayCloseTransition();
+            yield return new WaitForSeconds(1f); // Wait for transition to complete
+            
+            // Unload loading screen
+            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         public static void PlayUISound(AudioClip clip)
         {
             Instance.source.PlayOneShot(clip, SettingsManager.currentSettings.SoundVolume);
         }
-
 
         private IEnumerator LoadGameImpl()
         {
@@ -112,27 +118,45 @@ namespace Managers
             NumChickensSaved = 0;
             toMainMenu.gameObject.SetActive(true);
             quitGame.gameObject.SetActive(false);
-            //OStartCoroutine(PEN UI COVERING
-            yield return TransitionScreen(openTime, openCurve, true);
-            yield return new WaitForSeconds(openTime);
+            
+            // Load loading screen
+            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
+            yield return new WaitUntil(() => LoadingScreen.Instance != null);
+            
+            // Open transition (cover the screen)
+            bool transitionComplete = false;
+            LoadingScreen.Instance.PlayOpenTransition(() => transitionComplete = true);
+            yield return new WaitUntil(() => transitionComplete);
+            
             source.Stop();
+            
             DateTime currentTime = DateTime.Now;
-            //Additively remove the player scene?
-            SceneManager.UnloadSceneAsync(1).completed += _ =>
-                //Additively load the main menu
-                SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive).completed += _ =>
-                {
-                    StartCoroutine(ReadyGame(currentTime));
-                };
-
+            
+            // Unload main menu
+            yield return SceneManager.UnloadSceneAsync(1);
+            
+            // Load game scene
+            yield return SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+            
+            yield return ReadyGame(currentTime);
+            
+            // Unload loading screen
+            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         private IEnumerator ReadyGame(DateTime startTime)
         {
             var timeSpan = DateTime.Now.Subtract(startTime);
-            float s = intendedDelay-timeSpan.Seconds;
+            float s = intendedDelay - timeSpan.Seconds;
             if (s > 0) yield return new WaitForSeconds(s);
-            yield return StartCoroutine( TransitionScreen(closeTime, closeCurve, false));
+            
+            // Close transition (reveal the game/menu)
+            if (LoadingScreen.Instance != null)
+            {
+                bool transitionComplete = false;
+                LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
+                yield return new WaitUntil(() => transitionComplete);
+            }
 
             if (_inGame)
             {
@@ -155,24 +179,34 @@ namespace Managers
             #if !UNITY_WEBGL // You can't do this in webgl
             quitGame.gameObject.SetActive(true);
             #endif
-            //OStartCoroutine(PEN UI COVERING
-            yield return TransitionScreen(openTime, openCurve, true);
-            yield return new WaitForSeconds(openTime);
+            
+            // Load loading screen
+            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
+            yield return new WaitUntil(() => LoadingScreen.Instance != null);
+            
+            // Open transition
+            bool transitionComplete = false;
+            LoadingScreen.Instance.PlayOpenTransition(() => transitionComplete = true);
+            yield return new WaitUntil(() => transitionComplete);
+            
             source.Stop();
 
             DateTime currentTime = DateTime.Now;
 
-            //Additively remove the player scene?
-            SceneManager.UnloadSceneAsync(2).completed += _ =>
-                //Additively load the main menu
-                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive).completed += _ =>
-                    StartCoroutine(ReadyGame(currentTime));
-            //CLOSE UI COVERING
+            // Unload game scene
+            yield return SceneManager.UnloadSceneAsync(2);
+            
+            // Load main menu
+            yield return SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+            
+            yield return ReadyGame(currentTime);
+            
+            // Unload loading screen
+            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         public static void LoadGame()
         {
-            //Instance.LoadGameImpl();
             Instance.StartCoroutine(Instance.LoadGameImpl());
         }
 
@@ -186,47 +220,10 @@ namespace Managers
             Application.Quit();
         }
 
-        private IEnumerator TransitionScreen(float duration, AnimationCurve curve, bool isOpen)
-        {
-            float o = 0;
-        
-            canvas.SetActive(true);
-            if (!isOpen)
-            {
-                _textBlocks.SetActive(false);
-            }
-
-            _transition.SetFloat(StaticUtilities.FillMatID, curve.Evaluate(0));
-            float audioMin = SettingsManager.currentSettings.MusicVolume;
-            while (o < duration)
-            {
-                o += Time.deltaTime;
-                float perc = o / duration;
-                float eval = curve.Evaluate(perc);
-
-                source.volume = Mathf.Min(audioMin,eval);
-                _transition.SetFloat(StaticUtilities.FillMatID, eval);
-                yield return null;
-            }
-
-            if (!isOpen)
-            {
-                canvas.SetActive(false);
-            }
-            else
-            {
-                _textBlocks.SetActive(true);
-            }
-
-            _transition.SetFloat(StaticUtilities.FillMatID, curve.Evaluate(1));
-        }
-
-
         public static void TransitionGameMusic(bool isChasing, float duration)
         {
-            Instance.StartCoroutine(Instance.source.TransitionSound(isChasing?Instance.chaseMusic:Instance.stealthMusic,duration));
+            Instance.StartCoroutine(Instance.source.TransitionSound(isChasing ? Instance.chaseMusic : Instance.stealthMusic, duration));
         }
-
 
         public static void RegisterAIEscape()
         {
@@ -237,7 +234,6 @@ namespace Managers
         {
             ++NumChickens;
         }
-
         private void LateUpdate()
         {
             if (!_inGame) return;
@@ -250,10 +246,8 @@ namespace Managers
     public struct AudioVolumeRangeSet
     {
         public AudioClip clip;
-        [Range(0,1)]public float volume;
-        [Min(0)]public float rangeMultiplier;
+        [Range(0, 1)] public float volume;
+        [Min(0)] public float rangeMultiplier;
         public string tag; // Alternative (which would be for the best) is to make a custom editor... and That's not happenening, atleast not right now.
     }
-    
-
 }

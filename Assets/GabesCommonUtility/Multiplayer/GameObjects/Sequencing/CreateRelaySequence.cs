@@ -9,7 +9,7 @@ namespace GabesCommonUtility.Multiplayer.GameObjects.Sequencing
     {
         [SerializeField] private Behaviour success;
         [SerializeField] private Behaviour failure;
-
+        [SerializeField] private bool joinIfNotHost;
         public event Action<string> DisplayMessage;
 
         public async UniTask<IEntrySequence> ExecuteSequence()
@@ -17,7 +17,15 @@ namespace GabesCommonUtility.Multiplayer.GameObjects.Sequencing
             Debug.Log("Trying to CreateRelaySequence");
             try
             {
-                if (!LobbySystem.Instance.IsHost()) return failure as IEntrySequence;
+                if (!LobbySystem.Instance.IsHost())
+                {
+                    if (!joinIfNotHost 
+                        || LobbySystem.Instance.CurrentLobby == null 
+                        || !LobbySystem.Instance.CurrentLobby.Data.TryGetValue("RelayCode", out var code)) 
+                        return failure as IEntrySequence;
+                    await RelayHandler.Instance.JoinRelay(code.Value);
+                    return Default;
+                }
                 string value = await RelayHandler.Instance.CreateRelay(LobbySystem.Instance.CurrentLobby.MaxPlayers);
                 await LobbySystem.Instance.UpdateKey("RelayCode", value);
             }
