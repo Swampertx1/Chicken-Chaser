@@ -7,52 +7,25 @@ using Random = UnityEngine.Random;
 
 namespace GabesCommonUtility.Multiplayer.GameObjects
 {
-    public class PlayerSpawnSequence : NetworkBehaviour, IEntrySequence
+    public class PlayerSpawnSequence : NetworkBehaviour
     {
-        [SerializeField] private Behaviour success;
-        [SerializeField] private Behaviour failure;
+       
         [SerializeField] private NetworkObject playerPrefab;
         [SerializeField] private Transform[] randomSpawnPoint;
         [SerializeField] private LayerMask occupiedCheckLayer;
         [SerializeField] private float occupiedCheckRadius = 1f;
-
-        public event Action<string> DisplayMessage;
+        
         
         private bool spawnCompleted;
 
-        public async UniTask<IEntrySequence> ExecuteSequence()
-        {
-            Debug.Log("Attempting to spawn player");
-            try
-            {
-                spawnCompleted = false;
-                SpawnServerRpc();
+      
 
-                // Wait for spawn to complete (you may need to adjust this timeout)
-                await UniTask.WaitUntil(() => spawnCompleted, cancellationToken: this.GetCancellationTokenOnDestroy())
-                    .Timeout(TimeSpan.FromSeconds(5));
-
-                Debug.Log("Player spawned successfully");
-                return Default;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to spawn player: {e.Message}");
-                DisplayMessage?.Invoke($"Failed to spawn player: {e.Message}");
-                return failure as IEntrySequence;
-            }
-        }
-
-        [ContextMenu("Spawn")]
-        public void Spawn()
-        {
-            SpawnServerRpc();
-        }
+       
 
         [ServerRpc(RequireOwnership = false)]
-        private void SpawnServerRpc(ServerRpcParams rpcParams = default)
+        public void SpawnServerRpc(ulong clientId)
         {
-            ulong clientId = rpcParams.Receive.SenderClientId;
+           
 
             Transform spawnPoint = GetAvailableSpawnPoint();
 
@@ -121,20 +94,11 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
             return Physics.CheckSphere(spawnPoint.position, occupiedCheckRadius, occupiedCheckLayer);
         }
 
-        public IEntrySequence Default => success as IEntrySequence;
+        
         public bool IsCompleted => spawnCompleted;
 
-        private void OnDrawGizmos()
-        {
-            if (success && success is not IEntrySequence)
-            {
-                Debug.LogError("Success is INVALID", gameObject);
-            }
-            if (failure && failure is not IEntrySequence)
-            {
-                Debug.LogError("failure is INVALID", gameObject);
-            }
-        }
+        
+        
 
         private void OnDrawGizmosSelected()
         {
