@@ -17,13 +17,14 @@ public class PlayerSpawnManager : NetworkBehaviour
 
    private void SpawnChicken(ulong playerID)
    {
-      chickenSpawnSequence.SpawnServerRpc(playerID);
+      Debug.Log("Trying to spawn a chicken...");
+      chickenSpawnSequence.Spawn_ServerRpc(playerID);
       chickensInGame.Value += 1;
    }
 
    private void SpawnHuman(ulong playerID)
    {
-      humanSpawnSequence.SpawnServerRpc(playerID);
+      humanSpawnSequence.Spawn_ServerRpc(playerID);
    }
 
    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]

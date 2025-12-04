@@ -1,6 +1,3 @@
-using System;
-using Cysharp.Threading.Tasks;
-using GabesCommonUtility.Sequence;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -16,48 +13,53 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         [SerializeField] private float occupiedCheckRadius = 1f;
         
         
-        private bool spawnCompleted;
+        private bool _spawnCompleted;
 
       
 
        
 
-        [ServerRpc(RequireOwnership = false)]
-        public void SpawnServerRpc(ulong clientId)
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        public void Spawn_ServerRpc(ulong clientId)
         {
            
-
+            Debug.Log("Spawn_ServerRpc A");
             Transform spawnPoint = GetAvailableSpawnPoint();
+            Debug.Log("Spawn_ServerRpc B");
 
             if (spawnPoint == null)
             {
                 Debug.LogWarning($"All spawn points are occupied. Cannot spawn player for client {clientId}.");
-                NotifySpawnFailedClientRpc(clientId);
+                NotifySpawnFailed_ClientRpc(clientId);
                 return;
             }
+            Debug.Log("Spawn_ServerRpc C");
 
             // Spawn the player
             NetworkObject player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
             player.SpawnAsPlayerObject(clientId, true);
-            
-            NotifySpawnSuccessClientRpc(clientId);
+            Debug.Log("Spawn_ServerRpc D");
+
+            NotifySpawnSuccess_ClientRpc(clientId);
+            Debug.Log("Spawn_ServerRpc E");
+
         }
 
-        [ClientRpc]
-        private void NotifySpawnSuccessClientRpc(ulong clientId)
+        [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
+        private void NotifySpawnSuccess_ClientRpc(ulong clientId)
         {
             if (clientId == NetworkManager.Singleton.LocalClientId)
             {
-                spawnCompleted = true;
+                _spawnCompleted = true;
             }
         }
 
-        [ClientRpc]
-        private void NotifySpawnFailedClientRpc(ulong clientId)
+        [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
+        private void NotifySpawnFailed_ClientRpc(ulong clientId)
         {
             if (clientId == NetworkManager.Singleton.LocalClientId)
             {
-                spawnCompleted = false;
+                _spawnCompleted = false;
             }
         }
 
@@ -95,7 +97,7 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         }
 
         
-        public bool IsCompleted => spawnCompleted;
+        public bool IsCompleted => _spawnCompleted;
 
         
         

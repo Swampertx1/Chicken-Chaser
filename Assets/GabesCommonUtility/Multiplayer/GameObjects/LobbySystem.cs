@@ -6,6 +6,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using Random = System.Random;
 
 namespace GabesCommonUtility.Multiplayer.GameObjects
 {
@@ -28,11 +29,12 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         public string LobbyCode()=> _lobbyActual?.LobbyCode;
         
         private const int HeartbeatTimer = 15000;
-        private const int LongTimer = 60000;
-
-        private int _currentTimer =>HeartbeatTimer;
+        private const int ShortTimer = 2000;
         
         private CancellationTokenSource _cancellationTokenSource;
+
+        public event Action PlayerJoinedReal;
+        public event Action PlayerLeftReal;
 
         #region Initialization
 
@@ -46,27 +48,50 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
 
             _instance = this;
             DontDestroyOnLoad(gameObject);
-            
-            Events.DataChanged += CheckStartGame;
-            
-            Events.PlayerJoined += changes => { Debug.Log("Player joined"); };
-
-            Events.LobbyChanged += changes =>
+    
+            // Initialize local player
+            _localPlayer = new Player
             {
-                Debug.Log("Something changed about the lobby...");
-                if (changes.LobbyDeleted)
-                {
-                    Debug.Log("Hey does this lobby closed happen twice when deleted? Lobby closed");
-                }
-                else if (changes.PlayerJoined.Changed)
-                {
-                    Debug.Log("Player joined");
-                }
-                else if (changes.PlayerLeft.Changed)
-                {
-                    Debug.Log("Player left");
-                }
+                Profile = new("User: " + UnityEngine.Random.Range(0, 10000)), // AuthenticationService.Instance.PlayerId
+                Data = new Dictionary<string, PlayerDataObject>()
             };
+    
+            // Register event handlers (these will work after subscription)
+            Events.DataChanged += CheckStartGame;
+            Events.PlayerJoined += OnPlayerJoined;
+            Events.PlayerLeft += OnPlayerLeft;
+            Events.LobbyChanged += OnLobbyChanged;
+        }
+        
+        
+        private void OnPlayerJoined(List<LobbyPlayerJoined> players)
+        {
+            Debug.Log($"Player(s) joined! Count: {players.Count}");
+            foreach (var player in players)
+            {
+                Debug.Log($"Player joined - Index: {player.PlayerIndex}, ID: {player.Player.Id}");
+            }
+            PlayerLeftReal?.Invoke();
+        }
+
+        private void OnPlayerLeft(List<int> playerIndexes)
+        {
+            Debug.Log($"Player(s) left! Count: {playerIndexes.Count}");
+            foreach (var index in playerIndexes)
+            {
+                Debug.Log($"Player at index {index} left");
+            }
+
+            PlayerJoinedReal?.Invoke();
+        }
+
+        private void OnLobbyChanged(ILobbyChanges changes)
+        {
+            Debug.Log("Lobby changed");
+            if (changes.LobbyDeleted)
+            {
+                Debug.Log("Lobby was deleted");
+            }
         }
 
         #endregion
@@ -119,8 +144,72 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         {
             await DisposeLobby();
             _lobbyActual = newLobby;
-            await LobbyService.Instance.SubscribeToLobbyEventsAsync(_lobbyActual.Id, Events);
+    
+            Debug.Log($"Lobby created/joined: {_lobbyActual.Id}, Players: {_lobbyActual.Players.Count}");
+    
+            try
+            {
+                await LobbyService.Instance.SubscribeToLobbyEventsAsync(_lobbyActual.Id, Events);
+                Debug.Log("Successfully subscribed to lobby events");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to subscribe to lobby events: {e}");
+            }
+    
+            // Create cancellation token ONCE for both tasks
+            _cancellationTokenSource = new CancellationTokenSource();
+    
             HeartBeat().Forget();
+            PollLobbyUpdates().Forget();
+        }
+        
+        private async UniTaskVoid PollLobbyUpdates()
+        {
+            CancellationToken token = _cancellationTokenSource.Token;
+
+            try
+            {
+                while (!token.IsCancellationRequested && _lobbyActual != null)
+                {
+                    await UniTask.Delay(ShortTimer, cancellationToken: token); // Poll every 2 seconds
+    
+                    if (_lobbyActual == null) return;
+            
+                    try
+                    {
+                        int lastPlayerCount = _lobbyActual.Players.Count; // Get count BEFORE update
+                
+                        var updatedLobby = await LobbyService.Instance.GetLobbyAsync(_lobbyActual.Id);
+                        int currentPlayerCount = updatedLobby.Players.Count;
+                
+                        Debug.Log($"Poll: Last={lastPlayerCount}, Current={currentPlayerCount}"); // Debug log
+                
+                        // Update the lobby reference AFTER comparison
+                        _lobbyActual = updatedLobby;
+                
+                        // Now trigger events based on comparison
+                        if (currentPlayerCount > lastPlayerCount)
+                        {
+                            Debug.Log("Player joined detected!");
+                            PlayerJoinedReal?.Invoke();
+                        }
+                        else if (currentPlayerCount < lastPlayerCount)
+                        {
+                            Debug.Log("Player left detected!");
+                            PlayerLeftReal?.Invoke();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Polling error: {e}");
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("Polling cancelled");
+            }
         }
 
         public async UniTask UpdateKey(string key, string value, int visibility = 2)
@@ -141,18 +230,21 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         
         private async UniTaskVoid HeartBeat()
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = _cancellationTokenSource.Token;
+            CancellationToken token = _cancellationTokenSource.Token; // Use existing token
 
             try
             {
                 while (true)
                 {
-                    await UniTask.Delay(_currentTimer, cancellationToken: token); // Delay with cancellation token
+                    
+                    
+                    await UniTask.Delay(HeartbeatTimer, cancellationToken: token); // Delay with cancellation token
+
+                    if (!IsHost()) continue;
+                    
                     if (_lobbyActual == null || token.IsCancellationRequested) return;
 
                     await LobbyService.Instance.SendHeartbeatPingAsync(_lobbyActual.Id);
-
                     if (token.IsCancellationRequested) return;
 
                     // You can decide whether to recursively call HeartBeat() or use a loop
@@ -161,7 +253,6 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
             catch (Exception e)
             {
                 if (!Application.isPlaying) return;
-                // Handle cancellation if necessary
                 Debug.LogError("Heartbeat stopped working! " + e);
             }
         }

@@ -5300,6 +5300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1744557671}
   - component: {fileID: 1744557672}
+  - component: {fileID: 1744557673}
   m_Layer: 0
   m_Name: ChickenSpawnPoint
   m_TagString: Untagged
@@ -5350,6 +5351,31 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   occupiedCheckRadius: 1
+--- !u!114 &1744557673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744557670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2829470600
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1753007981
 GameObject:
   m_ObjectHideFlags: 0
@@ -6757,6 +6783,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1896548726}
   - component: {fileID: 1896548728}
+  - component: {fileID: 1896548729}
   m_Layer: 0
   m_Name: HumanSpawnPoint
   m_TagString: Untagged
@@ -6807,6 +6834,31 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   occupiedCheckRadius: 1
+--- !u!114 &1896548729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896548725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 786277238
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1913603880
 GameObject:
   m_ObjectHideFlags: 0
@@ -6896,7 +6948,7 @@ MonoBehaviour:
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
+  SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
@@ -9605,89 +9657,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1506727149}
   m_SourcePrefab: {fileID: 100100000, guid: 1f7efe38d14e5a34296582b227b8c872, type: 3}
---- !u!1001 &3876209616632863856
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2.91
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.53
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7476243
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.6641219
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -83.23
-      objectReference: {fileID: 0}
-    - target: {fileID: 3199869485871651065, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5662061587206153138, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6960144070719844066, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: GlobalObjectIdHash
-      value: 3611325558
-      objectReference: {fileID: 0}
-    - target: {fileID: 6960144070719844066, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: SceneMigrationSynchronization
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6960144070719844066, guid: 669113f048fd89c4182f4f2d457392d8,
-        type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 1353989773
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 669113f048fd89c4182f4f2d457392d8, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -9695,7 +9664,6 @@ SceneRoots:
   - {fileID: 1327913921}
   - {fileID: 1701984023}
   - {fileID: 589745472}
-  - {fileID: 3876209616632863856}
   - {fileID: 1809466991144839617}
   - {fileID: 2136340153}
   - {fileID: 934312682}
