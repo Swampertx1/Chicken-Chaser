@@ -13,6 +13,7 @@ public class Chicken : NetworkBehaviour, IControllable
     private Vector3 currentMoveDirection;
     private Rigidbody rb;
     private Grounding grounding;
+    private Animator animator;
 
     [Header("Rotation")] 
     [SerializeField] private Transform head;
@@ -43,11 +44,18 @@ public class Chicken : NetworkBehaviour, IControllable
     {
         rb = GetComponent<Rigidbody>();
         grounding = GetComponent<Grounding>();
+        animator = GetComponentInChildren<Animator>();
        
 #if !UNITY_EDITOR
         delay = new WaitForSeconds(chickenStats.JumpCooldown);
 #endif
-       
+        grounding.OnGroundStateChange += HandleGround;
+
+    }
+
+    private void HandleGround(bool obj)
+    {
+        animator.SetBool(StaticUtilities.IsGroundedAnimID,obj);
     }
 
     public override void OnNetworkSpawn()
@@ -62,6 +70,7 @@ public class Chicken : NetworkBehaviour, IControllable
         {
             playerCamera.enabled = false;
         }
+        
     }
     
     
@@ -69,6 +78,7 @@ public class Chicken : NetworkBehaviour, IControllable
     private void Update()
     {
         HandleObjectDetection();
+        animator.SetFloat(StaticUtilities.MoveSpeedAnimID, rb.linearVelocity.magnitude);
     }
 
     public void ThrowGrenadeInput()
@@ -85,7 +95,7 @@ public class Chicken : NetworkBehaviour, IControllable
             ThrowGrenade(param.Receive.SenderClientId);
         } 
     }
-
+ 
     private void ThrowGrenade(ulong id)
     {
         Debug.Log("ThrowGrenade() called!");
@@ -187,6 +197,7 @@ public class Chicken : NetworkBehaviour, IControllable
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * chickenStats.JumpForce, ForceMode.Impulse);
         jumpCoroutine = StartCoroutine(JumpCooldown());
+        animator.SetTrigger(StaticUtilities.JumpAnimID);
     }
 
     public void Collect()
