@@ -1,6 +1,5 @@
-#if UNITASK
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using GabesCommonUtility.Sequence;
 using UnityEngine;
@@ -8,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 #if UNITY_NETCODE_GAMEOBJECTS
 using Unity.Netcode;
+using System.Collections.Generic;
 #endif
 
 #if SCENE_REFERENCE
@@ -16,438 +16,321 @@ using Eflatun.SceneReference;
 
 namespace GabesCommonUtility.Multiplayer.GameObjects.Sequencing
 {
+    [ExecuteInEditMode]
     public class LoadSceneSequence : MonoBehaviour, IEntrySequence
     {
+        [Serializable]
+        private struct LoadScene
+        {
+#if UNITY_NETCODE_GAMEOBJECTS
+            public bool isLocal;
+#endif
+#if SCENE_REFERENCE
+            [SerializeField] private SceneReference sceneReference;
+            public string SceneName => sceneReference.Name;
+#else
+            [SerializeField] private string sceneName; 
+            public string SceneName => sceneName;
+#endif
+        }
+        
         [SerializeField] private Behaviour next;
         
-#if SCENE_REFERENCE
-        [SerializeField] private SceneReference[] scenesToLoad;
-        [SerializeField] private SceneReference[] scenesToUnload;
-        [SerializeField] private SceneReference loadingScene;
-#else
-        [SerializeField] private string[] sceneNamesToLoad;
-        [SerializeField] private string[] sceneNamesToUnload;
-        [SerializeField] private string loadingSceneName;
-#endif
-        [SerializeField] private LoadSceneMode loadType = LoadSceneMode.Single;
+        [SerializeField] private LoadSceneMode loadMode;
+        [SerializeField] private LoadScene[] scenesToLoad;
+        [SerializeField] private LoadScene[] scenesToUnload;
         
-#if UNITY_NETCODE_GAMEOBJECTS
-        [SerializeField] private bool waitForAllClientsBeforeUnload = true;
-#endif
+        [SerializeField] private bool useLoadingScreen;
         
         public IEntrySequence Default => next as IEntrySequence;
         
-#if SCENE_REFERENCE
         public bool IsCompleted
         {
             get
             {
-                if (scenesToLoad == null || scenesToLoad.Length == 0) return false;
-                return SceneManager.GetActiveScene().buildIndex == scenesToLoad[0].BuildIndex;
+                if (scenesToLoad == null || scenesToLoad.Length == 0) return true;
+                for (int i = 0; i < SceneManager.sceneCount; ++i)
+                {
+                    var s = SceneManager.GetSceneAt(i);
+                    if(scenesToLoad.All(x => x.SceneName != s.name)) return false;
+                }
+                return true;
             }
         }
-#else
-        public bool IsCompleted
-        {
-            get
-            {
-                if (sceneNamesToLoad == null || sceneNamesToLoad.Length == 0) return false;
-                return SceneManager.GetActiveScene().name == sceneNamesToLoad[0];
-            }
-        }
-#endif
 
         public event Action<string> DisplayMessage;
 
         public async UniTask<IEntrySequence> ExecuteSequence()
         {
-            // Validate that we have scenes to load
-#if SCENE_REFERENCE
-            if (scenesToLoad == null || scenesToLoad.Length == 0)
-            {
-                Debug.LogError("No scenes to load!");
-                return Default;
-            }
-#else
-            if (sceneNamesToLoad == null || sceneNamesToLoad.Length == 0)
-            {
-                Debug.LogError("No scenes to load!");
-                return Default;
-            }
-#endif
-
-            // Load loading screen first if it exists
-            bool hasLoadingScreen = await LoadLoadingScreen();
             
+            string displayMessage = "Loading Offline only.";
 #if UNITY_NETCODE_GAMEOBJECTS
-            // Check if we should use networked scene loading
-            if (NetworkManager.Singleton != null && 
-                NetworkManager.Singleton.IsListening && 
-                NetworkManager.Singleton.SceneManager != null)
+            if(NetworkManager.Singleton)
             {
-                return await ExecuteNetworkedSceneLoad(hasLoadingScreen);
+                displayMessage = NetworkManager.Singleton.IsServer  
+                    ? "Loading as server, BE AWARE: Make sure clients are also loading. "
+                    : "Loading as client, BE AWARE: Only offline scenes are loaded. ";
+                
+                NetworkManager.Singleton.SceneManager.SetClientSynchronizationMode(loadMode);
             }
 #endif
-            // Fall back to regular scene loading
-            return await ExecuteRegularSceneLoad(hasLoadingScreen);
-        }
+            Debug.Log($"LoadSceneSequence Initiating, with a loading screen? {useLoadingScreen}. {displayMessage}");
 
-        private async UniTask<bool> LoadLoadingScreen()
-        {
-#if SCENE_REFERENCE
-            // Check if loading scene reference is set and valid
-            if (loadingScene != null && loadingScene.State == SceneReferenceState.Regular)
-            {
-                await SceneManager.LoadSceneAsync(loadingScene.BuildIndex, LoadSceneMode.Additive);
-                
-                // Wait for LoadingScreen instance to be available
-                await UniTask.WaitUntil(() => LoadingScreen.Instance != null);
-                return true;
-            }
-#else
-            // Check if loading scene name is set
-            if (!string.IsNullOrEmpty(loadingSceneName))
-            {
-                await SceneManager.LoadSceneAsync(loadingSceneName, LoadSceneMode.Additive);
-                
-                // Wait for LoadingScreen instance to be available
-                await UniTask.WaitUntil(() => LoadingScreen.Instance != null);
-                return true;
-            }
-#endif
-            return false;
-        }
+            if (useLoadingScreen) await LoadingScreen.Instance.PlayOpenTransitionAsync();
 
-        private async UniTask<IEntrySequence> ExecuteRegularSceneLoad(bool hasLoadingScreen)
-        {
-            // Play open transition (cover screen) if loading screen exists
-            if (hasLoadingScreen && LoadingScreen.Instance != null)
-            {
-                bool transitionComplete = false;
-                LoadingScreen.Instance.PlayOpenTransition(() => transitionComplete = true);
-                await UniTask.WaitUntil(() => transitionComplete);
-            }
-            
-            if (loadType == LoadSceneMode.Single)
-            {
-                // Single mode - load the first scene in Single mode
-#if SCENE_REFERENCE
-                if (scenesToLoad[0] != null && scenesToLoad[0].State == SceneReferenceState.Regular)
-                {
-                    await SceneManager.LoadSceneAsync(scenesToLoad[0].BuildIndex, LoadSceneMode.Single);
-                }
-#else
-                if (!string.IsNullOrEmpty(sceneNamesToLoad[0]))
-                {
-                    await SceneManager.LoadSceneAsync(sceneNamesToLoad[0], LoadSceneMode.Single);
-                }
-#endif
-            }
-            else
-            {
-                // Additive mode - unload scenes first
-                await UnloadScenes();
-                
-                // Load all scenes additively
-                await LoadScenes();
-            }
+            if (loadMode == LoadSceneMode.Single) 
+                await LoadSingleScene();
+            else 
+                await HandleAdditiveScenes();
 
-            // Play close transition (reveal scene) and unload loading screen if it was loaded
-            if (hasLoadingScreen)
-            {
-                if (LoadingScreen.Instance != null)
-                {
-                    bool transitionComplete = false;
-                    LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
-                    await UniTask.WaitUntil(() => transitionComplete);
-                }
-                
-                await UnloadLoadingScreen();
-            }
+            if (useLoadingScreen)
+                await LoadingScreen.Instance.PlayCloseTransitionAsync();
 
             return Default;
         }
 
-        private async UniTask UnloadScenes()
+        private async UniTask HandleAdditiveScenes()
         {
-#if SCENE_REFERENCE
-            if (scenesToUnload != null && scenesToUnload.Length > 0)
+            await UnloadAdditive();
+            await LoadAdditive();
+        }
+        
+        private async UniTask UnloadAdditive()
+        {
+            if (scenesToUnload == null || scenesToUnload.Length == 0) return;
+
+            foreach (var scene in scenesToUnload)
             {
-                List<UniTask> unloadTasks = new List<UniTask>();
-                
-                foreach (var sceneRef in scenesToUnload)
+#if UNITY_NETCODE_GAMEOBJECTS
+                if (!scene.isLocal)
                 {
-                    if (sceneRef != null && sceneRef.State == SceneReferenceState.Regular)
+                    if (NetworkManager.Singleton)
                     {
-                        // Check if scene is actually loaded before trying to unload
-                        Scene scene = SceneManager.GetSceneByBuildIndex(sceneRef.BuildIndex);
-                        if (scene.isLoaded)
+                        if (NetworkManager.Singleton.IsServer)
                         {
-                            unloadTasks.Add(SceneManager.UnloadSceneAsync(sceneRef.BuildIndex).ToUniTask());
+                            await UnloadNetworkedSceneAsync(scene.SceneName);
                         }
-                    }
-                }
-                
-                if (unloadTasks.Count > 0)
-                {
-                    await UniTask.WhenAll(unloadTasks);
-                }
-            }
-#else
-            if (sceneNamesToUnload != null && sceneNamesToUnload.Length > 0)
-            {
-                List<UniTask> unloadTasks = new List<UniTask>();
-                
-                foreach (var sceneName in sceneNamesToUnload)
-                {
-                    if (!string.IsNullOrEmpty(sceneName))
-                    {
-                        // Check if scene is actually loaded before trying to unload
-                        Scene scene = SceneManager.GetSceneByName(sceneName);
-                        if (scene.isLoaded)
+                        else if (NetworkManager.Singleton.IsClient)
                         {
-                            unloadTasks.Add(SceneManager.UnloadSceneAsync(sceneName).ToUniTask());
+                            await WaitForNetworkedSceneUnloadAsync(scene.SceneName);
                         }
+                        continue;
                     }
+                    Debug.LogError($"Tried to unload networked scene '{scene.SceneName}' while not connected to a server");
+                    continue;
                 }
-                
-                if (unloadTasks.Count > 0)
-                {
-                    await UniTask.WhenAll(unloadTasks);
-                }
-            }
 #endif
+                await SceneManager.UnloadSceneAsync(scene.SceneName);
+            }
+        }
+        
+        private async UniTask LoadAdditive()
+        {
+            if (scenesToLoad == null || scenesToLoad.Length == 0) return;
+
+            foreach (var scene in scenesToLoad)
+            {
+#if UNITY_NETCODE_GAMEOBJECTS
+                if (!scene.isLocal)
+                {
+                    if (NetworkManager.Singleton)
+                    {
+                        if (NetworkManager.Singleton.IsServer)
+                        {
+                            await LoadNetworkedSceneAsync(scene.SceneName, LoadSceneMode.Additive);
+                        }
+                        else if (NetworkManager.Singleton.IsClient)
+                        {
+                            await WaitForNetworkedSceneLoadAsync(scene.SceneName);
+                        }
+                        continue;
+                    }
+                    Debug.LogError($"Tried to load networked scene '{scene.SceneName}' while not connected to a server");
+                    continue;
+                }
+#endif
+                await SceneManager.LoadSceneAsync(scene.SceneName, LoadSceneMode.Additive);
+            }
         }
 
-        private async UniTask LoadScenes()
+        private async UniTask LoadSingleScene()
         {
-#if SCENE_REFERENCE
-            if (scenesToLoad != null && scenesToLoad.Length > 0)
+            #if UNITY_EDITOR
+            if (scenesToLoad.Length != 1)
             {
-                List<UniTask> loadTasks = new List<UniTask>();
-                
-                foreach (var sceneRef in scenesToLoad)
-                {
-                    if (sceneRef != null && sceneRef.State == SceneReferenceState.Regular)
-                    {
-                        loadTasks.Add(SceneManager.LoadSceneAsync(sceneRef.BuildIndex, LoadSceneMode.Additive).ToUniTask());
-                    }
-                }
-                
-                if (loadTasks.Count > 0)
-                {
-                    await UniTask.WhenAll(loadTasks);
-                }
+                Debug.LogError("THERE IS AN INVALID NUMBER OF SCENES IN scenesToLoad. LOADING HAS BEEN SKIPPED");
+                return;
             }
-#else
-            if (sceneNamesToLoad != null && sceneNamesToLoad.Length > 0)
+            #endif
+            
+            LoadScene scene = scenesToLoad[0];
+            
+            #if UNITY_NETCODE_GAMEOBJECTS
+            if (!scene.isLocal)
             {
-                List<UniTask> loadTasks = new List<UniTask>();
-                
-                foreach (var sceneName in sceneNamesToLoad)
+                if (NetworkManager.Singleton)
                 {
-                    if (!string.IsNullOrEmpty(sceneName))
+                    // Server/Host initiates the load, clients wait for it
+                    if (NetworkManager.Singleton.IsServer)
                     {
-                        loadTasks.Add(SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive).ToUniTask());
+                        await LoadNetworkedSceneAsync(scene.SceneName, LoadSceneMode.Single);
                     }
+                    else if (NetworkManager.Singleton.IsClient)
+                    {
+                        await WaitForNetworkedSceneLoadAsync(scene.SceneName);
+                    }
+                    return;
                 }
-                
-                if (loadTasks.Count > 0)
-                {
-                    await UniTask.WhenAll(loadTasks);
-                }
+                Debug.LogError("Tried to load a networked scene while not being connected to a server");
+                return;
             }
-#endif
+            #endif
+
+            await SceneManager.LoadSceneAsync(scene.SceneName, LoadSceneMode.Single);
         }
 
 #if UNITY_NETCODE_GAMEOBJECTS
-        private async UniTask<IEntrySequence> ExecuteNetworkedSceneLoad(bool hasLoadingScreen)
+        private UniTask LoadNetworkedSceneAsync(string sceneName, LoadSceneMode mode)
         {
-            // Only server/host can load networked scenes
-            if (!NetworkManager.Singleton.IsServer)
-            {
-                Debug.LogWarning("Only the server can load networked scenes!");
-                
-                // Unload loading screen if it was loaded
-                if (hasLoadingScreen)
-                {
-                    if (LoadingScreen.Instance != null)
-                    {
-                        bool transitionComplete = false;
-                        LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
-                        await UniTask.WaitUntil(() => transitionComplete);
-                    }
-                    await UnloadLoadingScreen();
-                }
-                
-                return Default;
-            }
-
-            // Play open transition (cover screen) if loading screen exists
-            if (hasLoadingScreen && LoadingScreen.Instance != null)
-            {
-                bool transitionComplete = false;
-                LoadingScreen.Instance.PlayOpenTransition(() => transitionComplete = true);
-                await UniTask.WaitUntil(() => transitionComplete);
-            }
-
-            if (loadType == LoadSceneMode.Single)
-            {
-                // Single mode - load the first scene
-                bool sceneLoaded = await LoadNetworkedScene(
-#if SCENE_REFERENCE
-                    scenesToLoad[0].Name,
-#else
-                    sceneNamesToLoad[0],
-#endif
-                    LoadSceneMode.Single
-                );
-                
-                if (!sceneLoaded)
-                {
-                    Debug.LogError("Failed to load networked scene!");
-                    if (hasLoadingScreen)
-                    {
-                        if (LoadingScreen.Instance != null)
-                        {
-                            bool transitionComplete = false;
-                            LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
-                            await UniTask.WaitUntil(() => transitionComplete);
-                        }
-                        await UnloadLoadingScreen();
-                    }
-                    return Default;
-                }
-            }
-            else
-            {
-                // Additive mode
-                // Unload scenes first
-                await UnloadScenes();
-                
-                // Load all scenes
-                await LoadNetworkedScenes();
-            }
-
-            // Play close transition and unload loading screen
-            if (hasLoadingScreen)
-            {
-                if (!waitForAllClientsBeforeUnload)
-                {
-                    // Don't wait for clients, transition and unload immediately
-                    if (LoadingScreen.Instance != null)
-                    {
-                        bool transitionComplete = false;
-                        LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
-                        await UniTask.WaitUntil(() => transitionComplete);
-                    }
-                    await UnloadLoadingScreen();
-                }
-                else
-                {
-                    // Wait for all clients (already handled by LoadNetworkedScene)
-                    if (LoadingScreen.Instance != null)
-                    {
-                        bool transitionComplete = false;
-                        LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
-                        await UniTask.WaitUntil(() => transitionComplete);
-                    }
-                    await UnloadLoadingScreen();
-                }
-            }
-
-            return Default;
-        }
-
-        private async UniTask<bool> LoadNetworkedScene(string sceneNameToLoad, LoadSceneMode mode)
-        {
-            var completionSource = new UniTaskCompletionSource<bool>();
+            var tcs = new UniTaskCompletionSource();
             
-            // Subscribe to scene load completion
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadCompleted;
-
-            void OnSceneLoadCompleted(string sceneName, LoadSceneMode loadSceneMode, 
-                List<ulong> clientsCompleted, 
-                List<ulong> clientsTimedOut)
+            void OnLoadEventCompleted(string loadedSceneName, LoadSceneMode loadMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
             {
-                NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadCompleted;
-                completionSource.TrySetResult(clientsTimedOut.Count == 0);
-            }
-
-            var sceneEventProgress = NetworkManager.Singleton.SceneManager.LoadScene(
-                sceneNameToLoad, 
-                mode
-            );
-
-            if (sceneEventProgress != SceneEventProgressStatus.Started)
-            {
-                NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadCompleted;
-                Debug.LogError($"Failed to start networked scene loading. Status: {sceneEventProgress}");
-                return false;
-            }
-
-            // Wait for the scene load to complete
-            return await completionSource.Task;
-        }
-
-        private async UniTask LoadNetworkedScenes()
-        {
-#if SCENE_REFERENCE
-            if (scenesToLoad != null && scenesToLoad.Length > 0)
-            {
-                foreach (var sceneRef in scenesToLoad)
+                if (loadedSceneName == sceneName)
                 {
-                    if (sceneRef != null && sceneRef.State == SceneReferenceState.Regular)
+                    NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnLoadEventCompleted;
+                    
+                    if (clientsTimedOut.Count > 0)
                     {
-                        bool loaded = await LoadNetworkedScene(sceneRef.Name, LoadSceneMode.Additive);
-                        if (!loaded)
-                        {
-                            Debug.LogWarning($"Failed to load networked scene: {sceneRef.Name}");
-                        }
+                        Debug.LogWarning($"Scene '{sceneName}' loaded, but {clientsTimedOut.Count} client(s) timed out.");
                     }
+                    
+                    tcs.TrySetResult();
                 }
             }
-#else
-            if (sceneNamesToLoad != null && sceneNamesToLoad.Length > 0)
+            
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
+            
+            var status = NetworkManager.Singleton.SceneManager.LoadScene(sceneName, mode);
+            
+            if (status != SceneEventProgressStatus.Started)
             {
-                foreach (var sceneName in sceneNamesToLoad)
+                NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnLoadEventCompleted;
+                Debug.LogError($"Failed to start networked scene load: {status}");
+                tcs.TrySetResult();
+            }
+            
+            return tcs.Task;
+        }
+
+        private UniTask WaitForNetworkedSceneLoadAsync(string sceneName)
+        {
+            var tcs = new UniTaskCompletionSource();
+            
+            void OnLoadComplete(ulong clientId, string loadedSceneName, LoadSceneMode mode)
+            {
+                if (loadedSceneName == sceneName && clientId == NetworkManager.Singleton.LocalClientId)
                 {
-                    if (!string.IsNullOrEmpty(sceneName))
-                    {
-                        bool loaded = await LoadNetworkedScene(sceneName, LoadSceneMode.Additive);
-                        if (!loaded)
-                        {
-                            Debug.LogWarning($"Failed to load networked scene: {sceneName}");
-                        }
-                    }
+                    NetworkManager.Singleton.SceneManager.OnLoadComplete -= OnLoadComplete;
+                    tcs.TrySetResult();
                 }
             }
-#endif
+            
+            // Check if we're already in the target scene
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                if (SceneManager.GetSceneAt(i).name == sceneName)
+                {
+                    tcs.TrySetResult();
+                    return tcs.Task;
+                }
+            }
+            
+            NetworkManager.Singleton.SceneManager.OnLoadComplete += OnLoadComplete;
+            
+            return tcs.Task;
+        }
+
+        private UniTask UnloadNetworkedSceneAsync(string sceneName)
+        {
+            var tcs = new UniTaskCompletionSource();
+            
+            void OnUnloadEventCompleted(string unloadedSceneName, LoadSceneMode loadSceneMode, List<ulong> clientsTimedOut, List<ulong> ulongs)
+            {
+                if (unloadedSceneName == sceneName)
+                {
+                    NetworkManager.Singleton.SceneManager.OnUnloadEventCompleted -= OnUnloadEventCompleted;
+                    
+                    if (clientsTimedOut.Count > 0)
+                    {
+                        Debug.LogWarning($"Scene '{sceneName}' unloaded, but {clientsTimedOut.Count} client(s) timed out.");
+                    }
+                    
+                    tcs.TrySetResult();
+                }
+            }
+            
+            NetworkManager.Singleton.SceneManager.OnUnloadEventCompleted += OnUnloadEventCompleted;
+            
+            var status = NetworkManager.Singleton.SceneManager.UnloadScene(SceneManager.GetSceneByName(sceneName));
+            
+            if (status != SceneEventProgressStatus.Started)
+            {
+                NetworkManager.Singleton.SceneManager.OnUnloadEventCompleted -= OnUnloadEventCompleted;
+                Debug.LogError($"Failed to start networked scene unload: {status}");
+                tcs.TrySetResult();
+            }
+            
+            return tcs.Task;
+        }
+
+        private UniTask WaitForNetworkedSceneUnloadAsync(string sceneName)
+        {
+            var tcs = new UniTaskCompletionSource();
+            
+            void OnUnloadComplete(ulong clientId, string unloadedSceneName)
+            {
+                if (unloadedSceneName == sceneName && clientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    NetworkManager.Singleton.SceneManager.OnUnloadComplete -= OnUnloadComplete;
+                    tcs.TrySetResult();
+                }
+            }
+            
+            // Check if scene is already unloaded
+            bool sceneExists = false;
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                if (SceneManager.GetSceneAt(i).name == sceneName)
+                {
+                    sceneExists = true;
+                    break;
+                }
+            }
+            
+            if (!sceneExists)
+            {
+                tcs.TrySetResult();
+                return tcs.Task;
+            }
+            
+            NetworkManager.Singleton.SceneManager.OnUnloadComplete += OnUnloadComplete;
+            
+            return tcs.Task;
         }
 #endif
 
-        private async UniTask UnloadLoadingScreen()
+        #if UNITY_EDITOR
+        private void Start()
         {
-#if SCENE_REFERENCE
-            if (loadingScene != null && loadingScene.State == SceneReferenceState.Regular)
-            {
-                await SceneManager.UnloadSceneAsync(loadingScene.BuildIndex);
-            }
-#else
-            if (!string.IsNullOrEmpty(loadingSceneName))
-            {
-                await SceneManager.UnloadSceneAsync(loadingSceneName);
-            }
-#endif
-        }
-
-        private void OnDrawGizmos()
-        {
+            if (Application.isPlaying) return;
+            
             if (next && Default == null)
-            {
                 Debug.LogError("Success is INVALID", gameObject);
-            }
+            
+            if (useLoadingScreen && !FindFirstObjectByType<LoadingScreen>())
+                Debug.LogError("The loading GameObject is requested, but is not being used. Check common utility for a default example.");
         }
+        #endif
     }
 }
-#endif

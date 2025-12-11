@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,17 +21,49 @@ namespace GabesCommonUtility
 
         private Material _transitionMaterial;
         private static LoadingScreen _instance;
+        private Canvas _canvas;
 
         public static LoadingScreen Instance => _instance;
 
         private void Awake()
         {
+            // Handle singleton with DontDestroyOnLoad for prefab persistence
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             _instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            // Ensure we have a Canvas component
+            _canvas = GetComponent<Canvas>();
+            if (_canvas == null)
+            {
+                _canvas = gameObject.AddComponent<Canvas>();
+                _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                _canvas.sortingOrder = 9999; // Ensure it renders on top
+                
+                // Add required components for Canvas
+                if (GetComponent<CanvasScaler>() == null)
+                {
+                    gameObject.AddComponent<CanvasScaler>();
+                }
+                if (GetComponent<GraphicRaycaster>() == null)
+                {
+                    gameObject.AddComponent<GraphicRaycaster>();
+                }
+            }
             
             if (transitionImage != null)
             {
-                _transitionMaterial = transitionImage.material;
+                // Create instance of material to avoid modifying the shared material
+                _transitionMaterial = new Material(transitionImage.material);
+                transitionImage.material = _transitionMaterial;
             }
+            
+            SetActive(false);
         }
 
         private void Start()
@@ -47,8 +80,30 @@ namespace GabesCommonUtility
             }
         }
 
+        public void SetActive(bool isActive) => _canvas.enabled = isActive;
+
         /// <summary>
-        /// Plays the closing transition (reveals the scene behind)
+        /// Plays the closing transition (reveals the scene behind) - Awaitable
+        /// </summary>
+        public Task PlayCloseTransitionAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            StartCoroutine(TransitionScreen(closeTime, closeCurve, false, () => tcs.SetResult(true)));
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Plays the opening transition (covers the scene) - Awaitable
+        /// </summary>
+        public Task PlayOpenTransitionAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            StartCoroutine(TransitionScreen(openTime, openCurve, true, () => tcs.SetResult(true)));
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Plays the closing transition (reveals the scene behind) - Callback version
         /// </summary>
         public void PlayCloseTransition(System.Action onComplete = null)
         {
@@ -56,7 +111,7 @@ namespace GabesCommonUtility
         }
 
         /// <summary>
-        /// Plays the opening transition (covers the scene)
+        /// Plays the opening transition (covers the scene) - Callback version
         /// </summary>
         public void PlayOpenTransition(System.Action onComplete = null)
         {
@@ -65,6 +120,8 @@ namespace GabesCommonUtility
 
         private IEnumerator TransitionScreen(float duration, AnimationCurve curve, bool isOpen, System.Action onComplete)
         {
+            SetActive(true);
+            
             float elapsed = 0;
 
             if (!isOpen && textBlocks != null)
@@ -102,6 +159,9 @@ namespace GabesCommonUtility
             }
 
             onComplete?.Invoke();
+            
+            SetActive(isOpen); 
+
         }
 
         private void OnDestroy()
@@ -109,6 +169,12 @@ namespace GabesCommonUtility
             if (_instance == this)
             {
                 _instance = null;
+            }
+            
+            // Clean up instantiated material
+            if (_transitionMaterial != null)
+            {
+                Destroy(_transitionMaterial);
             }
         }
     }

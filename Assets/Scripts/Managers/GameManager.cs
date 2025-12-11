@@ -18,8 +18,6 @@ namespace Managers
         public static bool InGame => Instance._inGame;
 
         [SerializeField] private float intendedDelay = 1;
-    
-        [SerializeField] private int loadingSceneIndex = 3; // Index of the loading scene
         
         //Honestly, this should be in another script, but I cant be bothered.
         [Header("Sounds")]
@@ -89,9 +87,6 @@ namespace Managers
 
         private IEnumerator InitialSceneLoad()
         {
-            // Load loading screen
-            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
-            
             // Wait for LoadingScreen to initialize
             yield return new WaitUntil(() => LoadingScreen.Instance != null);
             
@@ -101,9 +96,6 @@ namespace Managers
             // Close transition (reveal main menu)
             LoadingScreen.Instance.PlayCloseTransition();
             yield return new WaitForSeconds(1f); // Wait for transition to complete
-            
-            // Unload loading screen
-            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         public static void PlayUISound(AudioClip clip)
@@ -119,9 +111,12 @@ namespace Managers
             toMainMenu.gameObject.SetActive(true);
             quitGame.gameObject.SetActive(false);
             
-            // Load loading screen
-            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
-            yield return new WaitUntil(() => LoadingScreen.Instance != null);
+            // Show loading screen (it's already instantiated)
+            if (LoadingScreen.Instance != null)
+            {
+                LoadingScreen.Instance.SetActive(true);
+            }
+            yield return null; // Wait one frame for activation
             
             // Open transition (cover the screen)
             bool transitionComplete = false;
@@ -139,9 +134,6 @@ namespace Managers
             yield return SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
             
             yield return ReadyGame(currentTime);
-            
-            // Unload loading screen
-            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         private IEnumerator ReadyGame(DateTime startTime)
@@ -156,6 +148,9 @@ namespace Managers
                 bool transitionComplete = false;
                 LoadingScreen.Instance.PlayCloseTransition(() => transitionComplete = true);
                 yield return new WaitUntil(() => transitionComplete);
+                
+                // Hide loading screen after transition
+                LoadingScreen.Instance.SetActive(false);
             }
 
             if (_inGame)
@@ -180,9 +175,12 @@ namespace Managers
             quitGame.gameObject.SetActive(true);
             #endif
             
-            // Load loading screen
-            yield return SceneManager.LoadSceneAsync(loadingSceneIndex, LoadSceneMode.Additive);
-            yield return new WaitUntil(() => LoadingScreen.Instance != null);
+            // Show loading screen
+            if (LoadingScreen.Instance != null)
+            {
+                LoadingScreen.Instance.SetActive(true);
+            }
+            yield return null;
             
             // Open transition
             bool transitionComplete = false;
@@ -200,9 +198,6 @@ namespace Managers
             yield return SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             
             yield return ReadyGame(currentTime);
-            
-            // Unload loading screen
-            yield return SceneManager.UnloadSceneAsync(loadingSceneIndex);
         }
 
         public static void LoadGame()
@@ -248,6 +243,6 @@ namespace Managers
         public AudioClip clip;
         [Range(0, 1)] public float volume;
         [Min(0)] public float rangeMultiplier;
-        public string tag; // Alternative (which would be for the best) is to make a custom editor... and That's not happenening, atleast not right now.
+        public string tag;
     }
 }

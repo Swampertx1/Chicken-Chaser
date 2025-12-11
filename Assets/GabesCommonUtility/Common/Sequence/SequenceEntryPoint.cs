@@ -10,7 +10,7 @@ namespace GabesCommonUtility.Sequence
      * The SequenceStartPoint is responsible for running a chain of IEntrySequence steps in order.
      * Each step is awaited asynchronously using UniTask.
      */
-    public class SequenceStartPoint : MonoBehaviour
+    public class SequenceEntryPoint : MonoBehaviour
     {
         [SerializeField] private Behaviour start;
         

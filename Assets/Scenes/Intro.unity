@@ -714,7 +714,7 @@ GameObject:
   - component: {fileID: 240241835}
   - component: {fileID: 240241834}
   - component: {fileID: 240241833}
-  - component: {fileID: 240241832}
+  - component: {fileID: 240241836}
   m_Layer: 5
   m_Name: Start game
   m_TagString: Untagged
@@ -865,30 +865,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 240241827}
   m_CullTransparentMesh: 1
---- !u!114 &240241832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 240241827}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6abe3b6f55dcffb48bec20720bc35bde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: GabesCommonUtility.Multiplayer.GameObjects.Sequencing::GabesCommonUtility.Multiplayer.GameObjects.Sequencing.LoadSceneSequence
-  next: {fileID: 0}
-  scenesToLoad:
-  - asset: {fileID: 102900000, guid: 9f8e53d55cfa56f418fa85c367c3a633, type: 3}
-    guid: 9f8e53d55cfa56f418fa85c367c3a633
-  scenesToUnload:
-  - asset: {fileID: 102900000, guid: 30e535050a123334fa5414fa395ae61f, type: 3}
-    guid: 30e535050a123334fa5414fa395ae61f
-  loadingScene:
-    asset: {fileID: 102900000, guid: f6904faadda60e346b8fd892e4196912, type: 3}
-    guid: f6904faadda60e346b8fd892e4196912
-  loadType: 1
-  waitForAllClientsBeforeUnload: 1
 --- !u!114 &240241833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -901,7 +877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262abcdb3db94f83a1fb8acc43b358a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: GabesCommonUtility.Multiplayer.GameObjects.Sequencing::GabesCommonUtility.Multiplayer.GameObjects.Sequencing.JoinRelaySequence
-  success: {fileID: 240241832}
+  success: {fileID: 240241836}
   failure: {fileID: 0}
 --- !u!114 &240241834
 MonoBehaviour:
@@ -915,7 +891,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cdb8a546be34eac8260dc4d1029c4e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: GabesCommonUtility.Multiplayer.GameObjects.Sequencing::GabesCommonUtility.Multiplayer.GameObjects.Sequencing.CreateRelaySequence
-  success: {fileID: 240241832}
+  success: {fileID: 240241836}
   failure: {fileID: 240241833}
   joinIfNotHost: 0
 --- !u!114 &240241835
@@ -933,6 +909,23 @@ MonoBehaviour:
   start: {fileID: 240241834}
   activateOnStart: 0
   persist: 0
+--- !u!114 &240241836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240241827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f47573cac89a7b4290811a3b02c5b9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GabesCommonUtility.Multiplayer.GameObjects.Sequencing::GabesCommonUtility.SpawnNetworkObjectSequence
+  networkPrefab: {fileID: 3616805567773140549, guid: 50098510f0d11174e9a818acadba7689,
+    type: 3}
+  success: {fileID: 0}
+  failure: {fileID: 0}
+  destroyAfterSpawn: 0
 --- !u!1 &266840602
 GameObject:
   m_ObjectHideFlags: 0
@@ -11247,6 +11240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d563bd97f83c37b48a48141b4a376336, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particles: {fileID: 0}
 --- !u!4 &5818659190423006629
 Transform:
   m_ObjectHideFlags: 0
