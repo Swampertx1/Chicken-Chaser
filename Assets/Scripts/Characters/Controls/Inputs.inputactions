@@ -43,13 +43,40 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Grenade",
-                    "type": "Button",
+                    "name": "Ability1",
+                    "type": "PassThrough",
                     "id": "81fe346c-42b0-4b95-86c3-11e9b2d4f1b0",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ability2",
+                    "type": "PassThrough",
+                    "id": "17410a7a-272d-455a-8c96-b48674126651",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ability3",
+                    "type": "PassThrough",
+                    "id": "721182e8-0bf0-46fc-b791-c7ef676b11af",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ability4",
+                    "type": "PassThrough",
+                    "id": "a6342fba-e891-40fb-92d2-8b68ca4ad897",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -144,11 +171,44 @@
                 {
                     "name": "",
                     "id": "559356dc-9558-433e-88d2-137b70ceadbf",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ability1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eb950ab6-435a-4ea6-9085-9fafdb1a3b5e",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ability2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e2aee729-1538-438a-b002-e17055fc01c2",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Grenade",
+                    "action": "Ability3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c68ff638-8806-4a4e-9e42-4e6e4c575e1a",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ability4",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

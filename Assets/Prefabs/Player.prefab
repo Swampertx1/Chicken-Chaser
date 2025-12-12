@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1353989773
+  GlobalObjectIdHash: 548099043
   InScenePlacedSourceGlobalObjectIdHash: 1353989773
   DeferredDespawnTick: 0
   Ownership: 1
@@ -444,7 +444,7 @@ MonoBehaviour:
   grenadePrefab: {fileID: -3054669219373852787, guid: 141adb5297521184e9c93ec8594178b5,
     type: 3}
   grenadeThrowForce: 15
-  grenadeCooldown: 2
+  grenadeCooldown: 0
 --- !u!54 &4454101977502422255
 Rigidbody:
   m_ObjectHideFlags: 0

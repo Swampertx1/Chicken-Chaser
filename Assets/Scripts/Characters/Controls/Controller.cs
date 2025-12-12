@@ -12,7 +12,7 @@ public static class Controller
         inputs.Player.Look.performed += context => controllable.Look(context.ReadValue<Vector2>());
         inputs.Player.Jump.performed += context => controllable.Jump();
         inputs.Player.Collect.performed += context => controllable.Collect();
-        inputs.Player.Grenade.performed += context => controllable.ThrowGrenadeInput(); // Add this line
+        inputs.Player.Ability1.performed += context => controllable.ThrowGrenadeInput(); // Add this line
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
