@@ -1,9 +1,36 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public static class Controller
+[RequireComponent(typeof(PlayerInput))]
+public  class Controller : MonoBehaviour
 {
-    private static Inputs inputs;
-    private static IControllable controllable;
+   PlayerInput playerInput;
+    private void Start()
+    {
+         playerInput = GetComponent<PlayerInput>();
+         var Controllables = GetComponentsInChildren<IControllable>();
+         foreach (var controllable in Controllables)
+         {
+             controllable.OnControlsGained(playerInput);
+             
+         }
+         playerInput.actions.Enable();
+    }
+
+    private void OnEnable()
+    {
+        playerInput ??= GetComponent<PlayerInput>();
+        playerInput?.actions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput ??= GetComponent<PlayerInput>();
+        playerInput?.actions.Disable();
+    }
+    
+  /////  private static Inputs inputs;
+    /*private static IControllable controllable;
 
     private static void Initialize()
     {
@@ -22,5 +49,5 @@ public static class Controller
         controllable = current;
         if (inputs == null) Initialize();
         inputs!.Enable();
-    }
+    } */
 }

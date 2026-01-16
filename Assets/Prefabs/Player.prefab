@@ -209,8 +209,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4450424102145099836}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.017016122, y: -0.000000007597016, z: -1.4564183e-11, w: 0.9998552}
-  m_LocalPosition: {x: -0.5, y: 0.862823, z: -1.9852308}
+  m_LocalRotation: {x: 0.017016122, y: -0, z: -0, w: 0.9998552}
+  m_LocalPosition: {x: -0.5, y: 0.86282295, z: -1.9852308}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -347,6 +347,8 @@ GameObject:
   - component: {fileID: 8963538229177760629}
   - component: {fileID: 809461647961312687}
   - component: {fileID: 9164645026253894372}
+  - component: {fileID: 2574794325210201386}
+  - component: {fileID: 204900305841662244}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -376,6 +378,7 @@ Transform:
   - {fileID: 7231711947200562494}
   - {fileID: 769106261715211591}
   - {fileID: 6505323414232128643}
+  - {fileID: 6957087522654936282}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1890533995272224635
@@ -408,7 +411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 548099043
+  GlobalObjectIdHash: 1353989773
   InScenePlacedSourceGlobalObjectIdHash: 1353989773
   DeferredDespawnTick: 0
   Ownership: 1
@@ -434,6 +437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chicken
   ShowTopMostFoldoutHeaderGroup: 1
+  firePoint: {fileID: 6957087522654936282}
   head: {fileID: 2734304907029226763}
   chickenStats: {fileID: 11400000, guid: e95017d3c1f4e164c873cb00c69f9b93, type: 2}
   body: {fileID: 3199869485871651065}
@@ -592,6 +596,69 @@ MonoBehaviour:
     TriggerNameHash: 125937960
     TransitionIndex: 1
   m_Animator: {fileID: 8772373477276536440}
+--- !u!114 &2574794325210201386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662061587206153138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04e2a20964efa614d875693cd163f734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilitySystem
+  abilityTemplate:
+  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
+  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
+  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
+  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
+--- !u!114 &204900305841662244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662061587206153138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d622fe4491589f340b19faf7ef072398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterSpawnController
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerInput: {fileID: -944628639613478452, guid: ee04185383226d64fa596f0b39f4a3d3,
+    type: 3}
+--- !u!1 &7122714289872424543
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6957087522654936282}
+  m_Layer: 3
+  m_Name: Firing point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6957087522654936282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122714289872424543}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.346}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3199869485871651065}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8273480113772969671
 GameObject:
   m_ObjectHideFlags: 0

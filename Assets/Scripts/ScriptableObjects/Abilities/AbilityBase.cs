@@ -13,14 +13,15 @@ public abstract class AbilityBase : ScriptableObject
      private Coroutine _cooldownCoroutine;
      private Coroutine _activeCoroutine;
      private bool _isTryingToBeUsed;
-     private AbilitySystem _abilitySystem;
-
+     protected AbilitySystem abilitySystem;
+     protected Chicken chicken;
 
 
 
      public void Bind(AbilitySystem abilitySystem)
      {
-         _abilitySystem = abilitySystem;
+         this.abilitySystem = abilitySystem;
+         chicken = abilitySystem.GetComponent<Chicken>();
      }
     public bool OnCooldown()
     {
@@ -38,11 +39,11 @@ public abstract class AbilityBase : ScriptableObject
         _isTryingToBeUsed = true;
         if(_activeCoroutine  != null)
             return;
-        _activeCoroutine = _abilitySystem.StartCoroutine(Used());
+        _activeCoroutine = abilitySystem.StartCoroutine(Used());
     }
 
     public virtual bool CanUse() => !OnCooldown();
-    protected abstract void Activate();
+    protected abstract IEnumerator Activate();
 
     private IEnumerator CoolDown()
     {
@@ -56,8 +57,8 @@ public abstract class AbilityBase : ScriptableObject
         {
             if (CanUse())
             {
-                Activate();
-                _cooldownCoroutine = _abilitySystem.StartCoroutine(CoolDown());
+               yield return Activate();
+                _cooldownCoroutine = abilitySystem.StartCoroutine(CoolDown());
                 yield return _cooldownCoroutine;
             }
 

@@ -5,15 +5,23 @@ using ScriptableObjects;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Utilities;
 
 [RequireComponent(typeof(Grounding))]
 public class Chicken : NetworkBehaviour, IControllable
 {
-    private Vector3 currentMoveDirection;
+    public Vector3 currentMoveDirection { get; private set; }
     private Rigidbody rb;
     private Grounding grounding;
     private Animator animator;
+    [SerializeField]private Transform firePoint;
+    public Transform FirePoint => firePoint;
+    public Rigidbody Rb => rb;
+    public Grounding Grounding => grounding;
+    public Animator Animator => animator;
+    public ChickenStats ChickenStats => chickenStats;
+    public Transform Cam => cam;
 
     [Header("Rotation")] 
     [SerializeField] private Transform head;
@@ -61,10 +69,7 @@ public class Chicken : NetworkBehaviour, IControllable
     public override void OnNetworkSpawn()
     {
         enabled = IsOwner;
-        if (IsOwner)
-        {
-            Controller.BindController(this);
-        }
+        
 
         if (!IsLocalPlayer)
         {
@@ -151,6 +156,7 @@ public class Chicken : NetworkBehaviour, IControllable
         if (!interactibleObj) return;
         interactibleObj = null;
         onInteractibleObjectChanged?.Invoke();
+        
     }
 
     private void FixedUpdate()
@@ -241,5 +247,16 @@ public class Chicken : NetworkBehaviour, IControllable
             Gizmos.color = Color.red;
             Gizmos.DrawLine(origin, origin + direction * chickenStats.MaxRaycastDistance);
         }
+    }
+
+    public void OnControlsGained(PlayerInput input)
+    {
+        input.actions["Move"].performed += context => Move(context.ReadValue<Vector2>());
+        input.actions["Look"].performed += context => Look(context.ReadValue<Vector2>());
+        input.actions["Jump"].performed += context => Jump();
+        input.actions["Collect"].performed += context => Collect();
+        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

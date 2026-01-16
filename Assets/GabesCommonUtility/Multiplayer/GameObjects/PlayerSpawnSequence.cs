@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -40,17 +41,18 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
             player.SpawnAsPlayerObject(clientId, true);
             Debug.Log("Spawn_ServerRpc D");
 
-            NotifySpawnSuccess_ClientRpc(clientId);
+            NotifySpawnSuccess_ClientRpc(clientId, player.NetworkObjectId);
             Debug.Log("Spawn_ServerRpc E");
 
         }
 
         [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
-        private void NotifySpawnSuccess_ClientRpc(ulong clientId)
+        private void NotifySpawnSuccess_ClientRpc(ulong clientId, ulong objectId)
         {
             if (clientId == NetworkManager.Singleton.LocalClientId)
             {
                 _spawnCompleted = true;
+             
             }
         }
 

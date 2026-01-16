@@ -10,7 +10,7 @@
         "Unity.Services.Authentication",
         "Unity.Services.Multiplayer",
         "GabesCommonUtility.Sequence",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro", "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
