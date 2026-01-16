@@ -9,10 +9,10 @@ public class Egg : NetworkBehaviour
     private Rigidbody rb;
     private Collider coll;
     private TrailRenderer tr;
+    [SerializeField] private GameObject visibility;
     
     public void Spawn(Vector3 velocity, ulong ownerId)
-    {
-        gameObject.SetActive(true);
+    { 
        NetworkObject.SpawnWithOwnership(ownerId, false);
        NetworkObject.DontDestroyWithOwner = true;
        rb.linearVelocity = velocity;
@@ -21,7 +21,7 @@ public class Egg : NetworkBehaviour
     public void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        coll = GetComponent<Collider>();
+        coll = GetComponentInChildren<Collider>();
         tr = GetComponentInChildren<TrailRenderer>();
         
     }
@@ -48,7 +48,7 @@ public class Egg : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        gameObject.SetActive(false);
+        visibility.SetActive(false);
         tr.emitting = false;
     }
 
@@ -57,7 +57,7 @@ public class Egg : NetworkBehaviour
         tr.Clear();
 
         tr.emitting = true;
-        gameObject.SetActive(true);
+        visibility.SetActive(true);
         StartCoroutine(eggCollisionTimer());
         if (IsServer)
         {
