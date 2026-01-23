@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f8ee2cf643f924bae085bc45a32632, type: 3}
+  m_Name: Shield
+  m_EditorClassIdentifier: Assembly-CSharp::Shield
+  <Icon>k__BackingField: {fileID: 0}
+  <Cooldown>k__BackingField: 2.05
+  <CanBeHeld>k__BackingField: 1
+  <Sound>k__BackingField: {fileID: 0}
+  <Particles>k__BackingField: {fileID: 0}
+  shieldIsActive: 0
+  duration: 2.7

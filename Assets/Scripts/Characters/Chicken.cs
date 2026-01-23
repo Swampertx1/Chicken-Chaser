@@ -15,6 +15,9 @@ public class Chicken : NetworkBehaviour, IControllable
     private Rigidbody rb;
     private Grounding grounding;
     private Animator animator;
+    [SerializeField]private Shield shieldability;
+    [SerializeField] private float playerDamage;
+    
     [SerializeField]private Transform firePoint;
     public Transform FirePoint => firePoint;
     public Rigidbody Rb => rb;
@@ -33,6 +36,8 @@ public class Chicken : NetworkBehaviour, IControllable
     [SerializeField, Range(0,89.9f)] private float maxPitch = 80;
     private InteractibleObject interactibleObj;
     [SerializeField] private CinemachineCamera playerCamera;
+
+    [SerializeField] public float chickenHealth;
     
     [Header("Grenade")]
     [SerializeField] private NetworkObject grenadePrefab;
@@ -84,6 +89,11 @@ public class Chicken : NetworkBehaviour, IControllable
     {
         HandleObjectDetection();
         animator.SetFloat(StaticUtilities.MoveSpeedAnimID, rb.linearVelocity.magnitude);
+        if (shieldability && shieldability.shieldIsActive && shieldability.OnCooldown())
+        {
+            shieldability.shieldIsActive = false;
+        }
+        
     }
 
     public void ThrowGrenadeInput()
@@ -92,6 +102,8 @@ public class Chicken : NetworkBehaviour, IControllable
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+
+   
 
     private void ThrowGrenade_ServerRpc(RpcParams param = default)
     {
@@ -224,6 +236,13 @@ public class Chicken : NetworkBehaviour, IControllable
     public bool CanJump()
     {
         return grounding.IsGrounded && jumpCoroutine == null;
+    }
+    public void TakeDamage()
+    {
+        if (shieldability != null && shieldability.shieldIsActive)
+        
+            return;
+        chickenHealth -= playerDamage;
     }
     
     private void OnDrawGizmos()

@@ -437,6 +437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chicken
   ShowTopMostFoldoutHeaderGroup: 1
+  playerDamage: 0
   firePoint: {fileID: 6957087522654936282}
   head: {fileID: 2734304907029226763}
   chickenStats: {fileID: 11400000, guid: e95017d3c1f4e164c873cb00c69f9b93, type: 2}
@@ -445,6 +446,7 @@ MonoBehaviour:
   mouseSensitivity: 0.5
   maxPitch: 80
   playerCamera: {fileID: 128586403900476690}
+  chickenHealth: 0
   grenadePrefab: {fileID: -3054669219373852787, guid: 141adb5297521184e9c93ec8594178b5,
     type: 3}
   grenadeThrowForce: 15
@@ -609,10 +611,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilitySystem
   abilityTemplate:
-  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
-  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
-  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
-  - {fileID: 11400000, guid: 56c794763eba9df4fbf85502eaa19927, type: 2}
+  - {fileID: 11400000, guid: 75dcda74bbbd77442a61fabd74ab16f4, type: 2}
+  - {fileID: 11400000, guid: 75dcda74bbbd77442a61fabd74ab16f4, type: 2}
+  - {fileID: 11400000, guid: 75dcda74bbbd77442a61fabd74ab16f4, type: 2}
+  - {fileID: 11400000, guid: 75dcda74bbbd77442a61fabd74ab16f4, type: 2}
 --- !u!114 &204900305841662244
 MonoBehaviour:
   m_ObjectHideFlags: 0
