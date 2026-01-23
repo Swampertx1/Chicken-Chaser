@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7f8ee2cf643f924bae085bc45a32632, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: Assembly-CSharp::Shield
-  <Icon>k__BackingField: {fileID: 0}
-  <Cooldown>k__BackingField: 2.05
+  <Icon>k__BackingField: {fileID: 21300000, guid: f89be60faccf05a4fa2f970abaf1625f,
+    type: 3}
+  <Cooldown>k__BackingField: 2
   <CanBeHeld>k__BackingField: 1
   <Sound>k__BackingField: {fileID: 0}
   <Particles>k__BackingField: {fileID: 0}

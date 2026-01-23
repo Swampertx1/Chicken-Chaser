@@ -29,7 +29,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _OutlineWidth: 0.002
+    - _OutlineWidth: 0.254
     - _RimStep: 0.827
     - _RimStepSmooth: 0.371
     - _ShadowStep: 0.5
@@ -42,3 +42,4 @@ Material:
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

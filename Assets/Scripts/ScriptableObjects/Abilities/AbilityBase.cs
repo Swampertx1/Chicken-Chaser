@@ -10,11 +10,12 @@ public abstract class AbilityBase : ScriptableObject
     [field: SerializeField] protected bool CanBeHeld { get; private set; }
     [field: SerializeField] protected AudioClip Sound { get; private set; }
     [field: SerializeField] protected ParticleSystem Particles { get; private set; }
-     private Coroutine _cooldownCoroutine;
+    private float cooldownTime;
      private Coroutine _activeCoroutine;
      private bool _isTryingToBeUsed;
      protected AbilitySystem abilitySystem;
      protected Chicken chicken;
+     public float CooldownPercent => cooldownTime / Cooldown;
 
 
 
@@ -22,10 +23,12 @@ public abstract class AbilityBase : ScriptableObject
      {
          this.abilitySystem = abilitySystem;
          chicken = abilitySystem.GetComponent<Chicken>();
+         cooldownTime = Cooldown;
+         
      }
     public bool OnCooldown()
     {
-       return _cooldownCoroutine != null; 
+     return cooldownTime < Cooldown; 
     }
 
     
@@ -47,8 +50,13 @@ public abstract class AbilityBase : ScriptableObject
 
     private IEnumerator CoolDown()
     {
-        yield return new WaitForSeconds(Cooldown);
-        _cooldownCoroutine = null;
+        while (OnCooldown())
+        {
+            cooldownTime += Time.deltaTime;
+            yield return null;
+        }
+
+        cooldownTime = Cooldown;
     }
 
     private IEnumerator Used()
@@ -58,8 +66,9 @@ public abstract class AbilityBase : ScriptableObject
             if (CanUse())
             {
                yield return Activate();
-                _cooldownCoroutine = abilitySystem.StartCoroutine(CoolDown());
-                yield return _cooldownCoroutine;
+               cooldownTime = 0;
+                 abilitySystem.StartCoroutine(CoolDown());
+                
             }
 
             yield return null;

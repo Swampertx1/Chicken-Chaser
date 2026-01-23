@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eaf93d4aea5a184a85ba88b6e1d63f7, type: 3}
   m_Name: DoubleJump
   m_EditorClassIdentifier: Assembly-CSharp::DoubleJump
-  <Icon>k__BackingField: {fileID: 0}
+  <Icon>k__BackingField: {fileID: 21300000, guid: a47bf4bfcd00d7e46a27a3f5e4452ae0,
+    type: 3}
   <Cooldown>k__BackingField: 1
   <CanBeHeld>k__BackingField: 1
   <Sound>k__BackingField: {fileID: 0}

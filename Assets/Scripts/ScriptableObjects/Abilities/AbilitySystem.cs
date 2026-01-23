@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class AbilitySystem : MonoBehaviour, IControllable
 {
     [SerializeField] AbilityBase []abilityTemplate;
+    [SerializeField] AbilityUI []abilityUI;
     private AbilityBase []_ability;
 
     private void Awake()
@@ -20,6 +21,7 @@ public class AbilitySystem : MonoBehaviour, IControllable
             var ability = abilityTemplate[index];
             _ability[index] = Instantiate(ability);
             _ability[index].Bind(this);
+            abilityUI[index].SetUpAbility(ability);
            
         }
     }
@@ -40,7 +42,10 @@ public class AbilitySystem : MonoBehaviour, IControllable
         input.actions["Ability3"].performed += ctx => Use(2, ctx.ReadValueAsButton());
         input.actions["Ability4"].performed += ctx => Use(3, ctx.ReadValueAsButton());
         
-        
+      abilityUI[0].SetKey(input.actions["Ability1"].GetBindingDisplayString());  
+      abilityUI[1].SetKey(input.actions["Ability2"].GetBindingDisplayString());  
+      abilityUI[2].SetKey(input.actions["Ability3"].GetBindingDisplayString());  
+      abilityUI[3].SetKey(input.actions["Ability4"].GetBindingDisplayString());  
         
      
     }

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d51482fb7380648a030fd402d4b90f, type: 3}
   m_Name: Dash
   m_EditorClassIdentifier: Assembly-CSharp::Dash
-  <Icon>k__BackingField: {fileID: 0}
-  <Cooldown>k__BackingField: 0
+  <Icon>k__BackingField: {fileID: 21300000, guid: 742ac45aa13714c4c8de337aa6303038,
+    type: 3}
+  <Cooldown>k__BackingField: 2
   <CanBeHeld>k__BackingField: 0
   <Sound>k__BackingField: {fileID: 0}
   <Particles>k__BackingField: {fileID: 0}
