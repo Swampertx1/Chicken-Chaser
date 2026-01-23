@@ -21,7 +21,7 @@ public class AbilitySystem : MonoBehaviour, IControllable
             var ability = abilityTemplate[index];
             _ability[index] = Instantiate(ability);
             _ability[index].Bind(this);
-            abilityUI[index].SetUpAbility(ability);
+            abilityUI[index].SetUpAbility(_ability[index]);
            
         }
     }
