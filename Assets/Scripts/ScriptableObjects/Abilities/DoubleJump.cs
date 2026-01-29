@@ -8,19 +8,19 @@ public class DoubleJump : AbilityBase
     [SerializeField] int numExtraJumps = 1;
     protected override IEnumerator Activate()
     {
-        Rigidbody rb = chicken.Rb;
+        Rigidbody rb = _chicken.Rb;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        rb.AddForce(Vector3.up * chicken.ChickenStats.JumpForce, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * _chicken.ChickenStats.JumpForce, ForceMode.Impulse);
         numJumps += 1;
         if (numJumps >= numExtraJumps)
         {
-            yield return new WaitUntil(() => chicken.Grounding.IsGrounded);
+            yield return new WaitUntil(() => _chicken.Grounding.IsGrounded);
             numJumps = 0;
         }
     }
 
     public override bool CanUse()
     {
-        return base.CanUse() && !chicken.Grounding.IsGrounded && numJumps < numExtraJumps;
+        return base.CanUse() && !_chicken.Grounding.IsGrounded && numJumps < numExtraJumps;
     }
 }

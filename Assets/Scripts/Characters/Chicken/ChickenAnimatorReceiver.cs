@@ -14,7 +14,7 @@ namespace Characters
         private void Awake()
         {
             grounding = GetComponentInParent<Grounding>();
-            grounding.OnGroundStateChange += GroundingOnOnGroundStateChange;
+            if(grounding) grounding.OnGroundStateChange += GroundingOnOnGroundStateChange;
         }
 
         private void GroundingOnOnGroundStateChange(bool obj)

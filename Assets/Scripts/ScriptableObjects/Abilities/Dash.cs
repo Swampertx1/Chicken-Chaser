@@ -9,21 +9,21 @@ public class Dash : AbilityBase
     protected override IEnumerator Activate()
     {
         float curTime = 0;
-        Vector3 start = chicken.Rb.position;
-        Vector3 end = chicken.Rb.position + chicken.transform.rotation * chicken.currentMoveDirection * distance;
-        var constraints = (int)chicken.Rb.constraints;
-        chicken.Rb.constraints = RigidbodyConstraints.FreezePosition | (RigidbodyConstraints)constraints;
+        Vector3 start = _chicken.Rb.position;
+        Vector3 end = _chicken.Rb.position + _chicken.transform.rotation * _chicken.currentMoveDirection * distance;
+        var constraints = (int)_chicken.Rb.constraints;
+        _chicken.Rb.constraints = RigidbodyConstraints.FreezePosition | (RigidbodyConstraints)constraints;
         while (curTime < time)
         {
             float percent = curTime / time;
             curTime += Time.deltaTime;
-            chicken.Rb.MovePosition(Vector3.Lerp(start, end, percent));
+            _chicken.Rb.MovePosition(Vector3.Lerp(start, end, percent));
             yield return null;
 
 
         }
-        chicken.Rb.MovePosition(end);
-        chicken.Rb.constraints = RigidbodyConstraints.None | (RigidbodyConstraints)constraints;
+        _chicken.Rb.MovePosition(end);
+        _chicken.Rb.constraints = RigidbodyConstraints.None | (RigidbodyConstraints)constraints;
         
     }
 }

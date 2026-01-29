@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -10,25 +9,25 @@ public abstract class AbilityBase : ScriptableObject
     [field: SerializeField] protected bool CanBeHeld { get; private set; }
     [field: SerializeField] protected AudioClip Sound { get; private set; }
     [field: SerializeField] protected ParticleSystem Particles { get; private set; }
-    private float cooldownTime;
+    private float _cooldownTime;
      private Coroutine _activeCoroutine;
      private bool _isTryingToBeUsed;
-     protected AbilitySystem abilitySystem;
-     protected Chicken chicken;
-     public float CooldownPercent => cooldownTime / Cooldown;
+     protected AbilitySystem _abilitySystem;
+     protected Chicken _chicken;
+     public float CooldownPercent => _cooldownTime / Cooldown;
 
 
 
      public void Bind(AbilitySystem abilitySystem)
      {
-         this.abilitySystem = abilitySystem;
-         chicken = abilitySystem.GetComponent<Chicken>();
-         cooldownTime = Cooldown;
+         _abilitySystem = abilitySystem;
+         _chicken = abilitySystem.GetComponent<Chicken>();
+         _cooldownTime = Cooldown;
          
      }
     public bool OnCooldown()
     {
-     return cooldownTime < Cooldown; 
+     return _cooldownTime < Cooldown; 
     }
 
     
@@ -40,9 +39,9 @@ public abstract class AbilityBase : ScriptableObject
     public  void StartActivate()
     {
         _isTryingToBeUsed = true;
-        if(_activeCoroutine  != null)
-            return;
-        _activeCoroutine = abilitySystem.StartCoroutine(Used());
+        if (_activeCoroutine != null) return;
+        _activeCoroutine = _abilitySystem.StartCoroutine(Used());
+        
     }
 
     public virtual bool CanUse() => !OnCooldown();
@@ -52,30 +51,39 @@ public abstract class AbilityBase : ScriptableObject
     {
         while (OnCooldown())
         {
-            cooldownTime += Time.deltaTime;
+            _cooldownTime += Time.deltaTime;
             yield return null;
         }
 
-        cooldownTime = Cooldown;
+        _cooldownTime = Cooldown;
     }
 
     private IEnumerator Used()
     {
+        if (!CanBeHeld)
+        {
+            if (CanUse())
+            {
+                yield return Activate();
+                _cooldownTime = 0;
+                _abilitySystem.StartCoroutine(CoolDown());
+            }
+            _activeCoroutine = null;
+            yield break;
+        }
+
         while (_isTryingToBeUsed)
         {
             if (CanUse())
             {
                yield return Activate();
-               cooldownTime = 0;
-                 abilitySystem.StartCoroutine(CoolDown());
-                
+               _cooldownTime = 0;
+               _abilitySystem.StartCoroutine(CoolDown());
             }
 
             yield return null;
         }
         _activeCoroutine = null;
-        
     }
-
 
 }

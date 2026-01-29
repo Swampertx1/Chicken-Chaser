@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,37 +5,41 @@ using UnityEngine;
 public class Egg : NetworkBehaviour
 {
     [SerializeField] private float lifetimeTimer;
-    private Rigidbody rb;
-    private Collider coll;
-    private TrailRenderer tr;
+    private Rigidbody _rb;
+    private Collider _coll;
+    private TrailRenderer _tr;
     [SerializeField] private GameObject visibility;
+
+    private Coroutine _lifeCycle;
     
     public void Spawn(Vector3 velocity, ulong ownerId)
     { 
        NetworkObject.SpawnWithOwnership(ownerId, false);
        NetworkObject.DontDestroyWithOwner = true;
-       rb.linearVelocity = velocity;
+       _rb.linearVelocity = velocity;
     }
 
     public void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        coll = GetComponentInChildren<Collider>();
-        tr = GetComponentInChildren<TrailRenderer>();
+        _rb = GetComponent<Rigidbody>();
+        _coll = GetComponentInChildren<Collider>();
+        _tr = GetComponentInChildren<TrailRenderer>();
         
     }
 
-    private IEnumerator eggCollisionTimer()
+    private IEnumerator EggCollisionTimer()
     {
-        coll.enabled = false;
+        _coll.enabled = false;
         yield return new WaitForSeconds(0.1f);
-        coll.enabled = true;
+        _coll.enabled = true;
     }
 
-    private IEnumerator eggTimer()
+    private IEnumerator EggTimer()
     {
         yield return new WaitForSeconds(lifetimeTimer);
+        _lifeCycle = null;
         DespawnServerRpc();
+
     }
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Server)]
     private void DespawnServerRpc()
@@ -49,20 +52,19 @@ public class Egg : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         visibility.SetActive(false);
-        tr.emitting = false;
+        _tr.emitting = false;
     }
 
     public override void OnNetworkSpawn()
     {
-        tr.Clear();
+        _tr.Clear();
 
-        tr.emitting = true;
+        _tr.emitting = true;
         visibility.SetActive(true);
-        StartCoroutine(eggCollisionTimer());
-        if (IsServer)
-        {
-            StartCoroutine(eggTimer());
-        }
+        StartCoroutine(EggCollisionTimer());
+        if (!IsServer) return;
+        if(_lifeCycle != null) StopCoroutine(_lifeCycle);
+        _lifeCycle =  StartCoroutine(EggTimer());
     }
 
     private void OnCollisionEnter(Collision other)

@@ -6797,7 +6797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 692887160}
   - component: {fileID: 692887161}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SafeZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17603,7 +17603,7 @@ GameObject:
   - component: {fileID: 1822492478}
   - component: {fileID: 1822492477}
   - component: {fileID: 1822492480}
-  m_Layer: 2
+  m_Layer: 4
   m_Name: Water
   m_TagString: Water
   m_Icon: {fileID: 0}
@@ -19786,7 +19786,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2068359998}
   - component: {fileID: 2068359999}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SafeZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

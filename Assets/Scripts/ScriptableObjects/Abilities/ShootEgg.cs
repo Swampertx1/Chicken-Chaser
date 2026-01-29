@@ -11,14 +11,14 @@ public class ShootEggs : AbilityBase
 
     protected override IEnumerator Activate()
     {
-        Vector3 velocity = chicken.Cam.forward * shootForce + chicken.Cam.up * upwardForce;
+        Vector3 velocity = _chicken.Cam.forward * shootForce + _chicken.Cam.up * upwardForce;
 
       
   
        
 
         
-         Eggpool.instance.SpawnEggServerRpc(chicken.FirePoint.position, Quaternion.LookRotation(velocity), velocity);
+         Eggpool.instance.SpawnEggServerRpc(_chicken.FirePoint.position, Quaternion.LookRotation(velocity), velocity);
       
         
 
