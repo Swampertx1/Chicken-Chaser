@@ -36,7 +36,11 @@ public class Chicken : NetworkBehaviour, IControllable
     [SerializeField, Range(0,89.9f)] private float maxPitch = 80;
     private InteractibleObject interactibleObj;
     [SerializeField] private CinemachineCamera playerCamera;
-
+    
+    [SerializeField] private AudioSource audioSource;
+    private Dictionary<string, ParticleSystem> _particles = new();
+    private Dictionary<string, AudioClip> _audioClip = new();
+    
     [SerializeField] public float chickenHealth;
     
     [Header("Grenade")]
@@ -278,4 +282,57 @@ public class Chicken : NetworkBehaviour, IControllable
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
+    
+    
+    #region effects
+
+    public bool TryAddParticle(string key,ParticleSystem system)
+    {
+        return _particles .TryAdd(key, system);
+    }
+
+    public bool TryAddSound(string key,AudioClip sound)
+    {
+        return _audioClip .TryAdd(key, sound);
+    }
+    [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Owner)]
+    public void PlaysoundRPC(string key)
+    {
+        if (_audioClip.TryGetValue(key, out AudioClip clip))
+        {
+            audioSource.PlayOneShot(clip);
+        }
+        else
+        {
+            Debug.LogError(key + " is not a valid sound clip");
+        }
+    }
+    [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Owner)]
+    public void StopParticleRPC(string key)
+    {
+        if (_particles.TryGetValue(key, out ParticleSystem system))
+        {
+            system.Stop();
+        }
+        else
+        {
+            Debug.LogError(key + " is not a particle system");
+        }
+    }
+           [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Owner)]
+    public void PlayParticleRPC(string key)
+    {
+        if (_particles.TryGetValue(key, out ParticleSystem system))
+        {
+            system.Play();
+        }
+        else
+        {
+            Debug.LogError($"Couldn't find particle {key}");
+        }
+    }
+    #endregion
+    
+    
+    
 }

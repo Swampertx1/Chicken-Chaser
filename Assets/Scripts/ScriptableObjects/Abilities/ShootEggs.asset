@@ -16,8 +16,8 @@ MonoBehaviour:
     type: 3}
   <Cooldown>k__BackingField: 1
   <CanBeHeld>k__BackingField: 0
-  <Sound>k__BackingField: {fileID: 0}
-  <Particles>k__BackingField: {fileID: 0}
+  <Sound>k__BackingField: []
+  <Particles>k__BackingField: []
   eggPrefab: {fileID: 9127106470583158528, guid: 699935fe76292114b83efaa15acca931,
     type: 3}
   shootForce: 15

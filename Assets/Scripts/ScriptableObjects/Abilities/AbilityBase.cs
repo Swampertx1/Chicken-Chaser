@@ -7,8 +7,8 @@ public abstract class AbilityBase : ScriptableObject
     [field: SerializeField] public Sprite Icon { get; private set; }
     [field: SerializeField] protected float Cooldown { get; private set; }
     [field: SerializeField] protected bool CanBeHeld { get; private set; }
-    [field: SerializeField] protected AudioClip Sound { get; private set; }
-    [field: SerializeField] protected ParticleSystem Particles { get; private set; }
+    [field: SerializeField] protected AudioClip[] Sound { get; private set; }
+    [field: SerializeField] protected ParticleSystem[] Particles { get; private set; }
     private float _cooldownTime;
      private Coroutine _activeCoroutine;
      private bool _isTryingToBeUsed;
@@ -23,6 +23,33 @@ public abstract class AbilityBase : ScriptableObject
          _abilitySystem = abilitySystem;
          _chicken = abilitySystem.GetComponent<Chicken>();
          _cooldownTime = Cooldown;
+         OnBound();
+         BuildParticles();
+         BuildSounds();
+     }
+
+     protected virtual void BuildParticles()
+     {
+         foreach (var p in Particles)
+         {
+            
+            var ps = Instantiate(p, _chicken.transform);
+            _chicken.TryAddParticle(p.name, ps);
+         }
+         
+     }
+
+     protected virtual void BuildSounds()
+     {
+         foreach (var s in Sound)
+         {
+             _chicken.TryAddSound(s.name,s);
+
+         }
+     }
+
+     protected virtual void OnBound()
+     {
          
      }
     public bool OnCooldown()

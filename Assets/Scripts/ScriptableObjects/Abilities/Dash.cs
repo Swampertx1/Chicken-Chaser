@@ -11,8 +11,9 @@ public class Dash : AbilityBase
         float curTime = 0;
         Vector3 start = _chicken.Rb.position;
         Vector3 end = _chicken.Rb.position + _chicken.transform.rotation * _chicken.currentMoveDirection * distance;
-        var constraints = (int)_chicken.Rb.constraints;
-        _chicken.Rb.constraints = RigidbodyConstraints.FreezePosition | (RigidbodyConstraints)constraints;
+     Vector3 PreDashVelocity = _chicken.Rb.linearVelocity;
+     
+      _chicken.Rb.isKinematic = true;
         while (curTime < time)
         {
             float percent = curTime / time;
@@ -23,7 +24,15 @@ public class Dash : AbilityBase
 
         }
         _chicken.Rb.MovePosition(end);
-        _chicken.Rb.constraints = RigidbodyConstraints.None | (RigidbodyConstraints)constraints;
+        _chicken.Rb.isKinematic = false;
+        _chicken.Rb.linearVelocity = PreDashVelocity;
+      //  _chicken.Rb.constraints = RigidbodyConstraints.None | (RigidbodyConstraints)constraints;
         
+      
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && _chicken.currentMoveDirection.magnitude > 0;
     }
 }
