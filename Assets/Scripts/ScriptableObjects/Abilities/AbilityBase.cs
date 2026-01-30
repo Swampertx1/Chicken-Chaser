@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 
 public abstract class AbilityBase : ScriptableObject
@@ -7,7 +8,7 @@ public abstract class AbilityBase : ScriptableObject
     [field: SerializeField] public Sprite Icon { get; private set; }
     [field: SerializeField] protected float Cooldown { get; private set; }
     [field: SerializeField] protected bool CanBeHeld { get; private set; }
-    [field: SerializeField] protected AudioClip[] Sound { get; private set; }
+    [field: SerializeField] protected AudioResource[] Sound { get; private set; }
     [field: SerializeField] protected ParticleSystem[] Particles { get; private set; }
     private float _cooldownTime;
      private Coroutine _activeCoroutine;

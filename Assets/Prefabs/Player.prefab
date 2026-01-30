@@ -448,6 +448,7 @@ MonoBehaviour:
   mouseSensitivity: 0.5
   maxPitch: 80
   playerCamera: {fileID: 128586403900476690}
+  audioSource: {fileID: 2577906272591026871}
   chickenHealth: 0
   grenadePrefab: {fileID: -3054669219373852787, guid: 141adb5297521184e9c93ec8594178b5,
     type: 3}
@@ -1056,6 +1057,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 70c862bc985975547b6e20d5e1c01aea, type: 3}
+--- !u!82 &2577906272591026871 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 776792234091929458, guid: 70c862bc985975547b6e20d5e1c01aea,
+    type: 3}
+  m_PrefabInstance: {fileID: 2954687306585261509}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3573602149054614908 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1771836925857482937, guid: 70c862bc985975547b6e20d5e1c01aea,

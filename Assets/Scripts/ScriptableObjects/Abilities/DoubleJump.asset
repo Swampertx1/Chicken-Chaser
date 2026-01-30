@@ -16,7 +16,8 @@ MonoBehaviour:
     type: 3}
   <Cooldown>k__BackingField: 1
   <CanBeHeld>k__BackingField: 1
-  <Sound>k__BackingField: []
+  <Sound>k__BackingField:
+  - {fileID: 6418180475301049370, guid: 6084919e1237255469f17abaa7c79512, type: 2}
   <Particles>k__BackingField:
   - {fileID: 80139270534471525, guid: 61f8ddca288751145acb1fe5a748a7ee, type: 3}
   numExtraJumps: 1

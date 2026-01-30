@@ -5,6 +5,7 @@ using ScriptableObjects;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using Utilities;
 
@@ -39,7 +40,7 @@ public class Chicken : NetworkBehaviour, IControllable
     
     [SerializeField] private AudioSource audioSource;
     private Dictionary<string, ParticleSystem> _particles = new();
-    private Dictionary<string, AudioClip> _audioClip = new();
+    private Dictionary<string, AudioResource> _audioClip = new();
     
     [SerializeField] public float chickenHealth;
     
@@ -291,16 +292,17 @@ public class Chicken : NetworkBehaviour, IControllable
         return _particles .TryAdd(key, system);
     }
 
-    public bool TryAddSound(string key,AudioClip sound)
+    public bool TryAddSound(string key,AudioResource sound)
     {
         return _audioClip .TryAdd(key, sound);
     }
     [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Owner)]
     public void PlaysoundRPC(string key)
     {
-        if (_audioClip.TryGetValue(key, out AudioClip clip))
+        if (_audioClip.TryGetValue(key, out AudioResource clip))
         {
-            audioSource.PlayOneShot(clip);
+            audioSource.resource = clip;
+            audioSource.Play();
         }
         else
         {

@@ -12,6 +12,7 @@ public class DoubleJump : AbilityBase
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * _chicken.ChickenStats.JumpForce, ForceMode.Impulse);
         _chicken.PlayParticleRPC(Particles[0].name);
+            _chicken.PlaysoundRPC(Sound[0].name);
         
         numJumps += 1;
         if (numJumps >= numExtraJumps)
