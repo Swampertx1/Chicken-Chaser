@@ -89,6 +89,118 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     ""name"": ""Inputs"",
     ""maps"": [
         {
+            ""name"": ""Shared"",
+            ""id"": ""0179df33-222e-4ed3-bfe3-907bb8592f09"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""d0625442-2222-4ffc-a76a-a19bacc83ea0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""8c308b85-2c7b-453d-98da-1c4a16da9a25"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""e2dc04be-a2b8-4476-8eda-f2779937c615"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""3a17926f-ac5e-421a-8333-5471d7b618f8"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""386a1f6d-ab6b-43eb-bcb6-e9e1ff6ed16b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""3db0a603-cb1c-4610-9a8e-452ca6876be4"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""c5d91154-9ef6-457b-b5c0-ae87ff20a6b0"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""27f8fe5d-9274-4068-804e-cc9e66729637"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""44d4bf46-7704-40e5-ac68-7e426551a5b5"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""18d3f693-e07f-4065-b70d-e7f3e3aaf3ff"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": ""InvertVector2(invertX=false)"",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Player"",
             ""id"": ""f43d0baa-cb29-4393-afef-860c23cfa783"",
             ""actions"": [
@@ -301,6 +413,34 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""Human"",
+            ""id"": ""9145d00e-5c2c-43a6-b0a4-5fc550aa1a05"",
+            ""actions"": [
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""fa9c4f26-8e7d-4e88-b046-ea5b8240eef5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ef4de496-dfb0-437e-baf9-0499083c8a71"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""UI"",
             ""id"": ""2b5d413a-4408-4849-af7d-85d777a42f2d"",
             ""actions"": [
@@ -359,6 +499,11 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": []
 }");
+        // Shared
+        m_Shared = asset.FindActionMap("Shared", throwIfNotFound: true);
+        m_Shared_Move = m_Shared.FindAction("Move", throwIfNotFound: true);
+        m_Shared_Jump = m_Shared.FindAction("Jump", throwIfNotFound: true);
+        m_Shared_Look = m_Shared.FindAction("Look", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
@@ -369,6 +514,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_Ability2 = m_Player.FindAction("Ability2", throwIfNotFound: true);
         m_Player_Ability3 = m_Player.FindAction("Ability3", throwIfNotFound: true);
         m_Player_Ability4 = m_Player.FindAction("Ability4", throwIfNotFound: true);
+        // Human
+        m_Human = asset.FindActionMap("Human", throwIfNotFound: true);
+        m_Human_Newaction = m_Human.FindAction("New action", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Newaction = m_UI.FindAction("New action", throwIfNotFound: true);
@@ -379,7 +527,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
 
     ~@Inputs()
     {
+        UnityEngine.Debug.Assert(!m_Shared.enabled, "This will cause a leak and performance issues, Inputs.Shared.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, Inputs.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Human.enabled, "This will cause a leak and performance issues, Inputs.Human.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, Inputs.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Spectating.enabled, "This will cause a leak and performance issues, Inputs.Spectating.Disable() has not been called.");
     }
@@ -453,6 +603,124 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     {
         return asset.FindBinding(bindingMask, out action);
     }
+
+    // Shared
+    private readonly InputActionMap m_Shared;
+    private List<ISharedActions> m_SharedActionsCallbackInterfaces = new List<ISharedActions>();
+    private readonly InputAction m_Shared_Move;
+    private readonly InputAction m_Shared_Jump;
+    private readonly InputAction m_Shared_Look;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Shared".
+    /// </summary>
+    public struct SharedActions
+    {
+        private @Inputs m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public SharedActions(@Inputs wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Shared/Move".
+        /// </summary>
+        public InputAction @Move => m_Wrapper.m_Shared_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Shared/Jump".
+        /// </summary>
+        public InputAction @Jump => m_Wrapper.m_Shared_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action "Shared/Look".
+        /// </summary>
+        public InputAction @Look => m_Wrapper.m_Shared_Look;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Shared; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="SharedActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(SharedActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="SharedActions" />
+        public void AddCallbacks(ISharedActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SharedActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SharedActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="SharedActions" />
+        private void UnregisterCallbacks(ISharedActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SharedActions.UnregisterCallbacks(ISharedActions)" />.
+        /// </summary>
+        /// <seealso cref="SharedActions.UnregisterCallbacks(ISharedActions)" />
+        public void RemoveCallbacks(ISharedActions instance)
+        {
+            if (m_Wrapper.m_SharedActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="SharedActions.AddCallbacks(ISharedActions)" />
+        /// <seealso cref="SharedActions.RemoveCallbacks(ISharedActions)" />
+        /// <seealso cref="SharedActions.UnregisterCallbacks(ISharedActions)" />
+        public void SetCallbacks(ISharedActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SharedActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SharedActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="SharedActions" /> instance referencing this action map.
+    /// </summary>
+    public SharedActions @Shared => new SharedActions(this);
 
     // Player
     private readonly InputActionMap m_Player;
@@ -626,6 +894,102 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Human
+    private readonly InputActionMap m_Human;
+    private List<IHumanActions> m_HumanActionsCallbackInterfaces = new List<IHumanActions>();
+    private readonly InputAction m_Human_Newaction;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Human".
+    /// </summary>
+    public struct HumanActions
+    {
+        private @Inputs m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public HumanActions(@Inputs wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Human/Newaction".
+        /// </summary>
+        public InputAction @Newaction => m_Wrapper.m_Human_Newaction;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Human; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="HumanActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(HumanActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="HumanActions" />
+        public void AddCallbacks(IHumanActions instance)
+        {
+            if (instance == null || m_Wrapper.m_HumanActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_HumanActionsCallbackInterfaces.Add(instance);
+            @Newaction.started += instance.OnNewaction;
+            @Newaction.performed += instance.OnNewaction;
+            @Newaction.canceled += instance.OnNewaction;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="HumanActions" />
+        private void UnregisterCallbacks(IHumanActions instance)
+        {
+            @Newaction.started -= instance.OnNewaction;
+            @Newaction.performed -= instance.OnNewaction;
+            @Newaction.canceled -= instance.OnNewaction;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="HumanActions.UnregisterCallbacks(IHumanActions)" />.
+        /// </summary>
+        /// <seealso cref="HumanActions.UnregisterCallbacks(IHumanActions)" />
+        public void RemoveCallbacks(IHumanActions instance)
+        {
+            if (m_Wrapper.m_HumanActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="HumanActions.AddCallbacks(IHumanActions)" />
+        /// <seealso cref="HumanActions.RemoveCallbacks(IHumanActions)" />
+        /// <seealso cref="HumanActions.UnregisterCallbacks(IHumanActions)" />
+        public void SetCallbacks(IHumanActions instance)
+        {
+            foreach (var item in m_Wrapper.m_HumanActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_HumanActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="HumanActions" /> instance referencing this action map.
+    /// </summary>
+    public HumanActions @Human => new HumanActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -819,6 +1183,35 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     /// </summary>
     public SpectatingActions @Spectating => new SpectatingActions(this);
     /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Shared" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="SharedActions.AddCallbacks(ISharedActions)" />
+    /// <seealso cref="SharedActions.RemoveCallbacks(ISharedActions)" />
+    public interface ISharedActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnJump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLook(InputAction.CallbackContext context);
+    }
+    /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
@@ -881,6 +1274,21 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAbility4(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Human" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="HumanActions.AddCallbacks(IHumanActions)" />
+    /// <seealso cref="HumanActions.RemoveCallbacks(IHumanActions)" />
+    public interface IHumanActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "New action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNewaction(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
