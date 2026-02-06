@@ -17,6 +17,7 @@ MonoBehaviour:
   <Cooldown>k__BackingField: 2
   <CanBeHeld>k__BackingField: 1
   <Sound>k__BackingField: []
-  <Particles>k__BackingField: []
+  <Particles>k__BackingField:
+  - {fileID: 6446912467587260735, guid: 9088437ea86b2c049aa8bd4f58ffa2b9, type: 3}
   shieldIsActive: 0
   duration: 2.7

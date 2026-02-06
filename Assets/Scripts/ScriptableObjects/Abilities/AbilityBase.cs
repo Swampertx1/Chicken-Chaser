@@ -12,7 +12,7 @@ public abstract class AbilityBase : ScriptableObject
     [field: SerializeField] protected ParticleSystem[] Particles { get; private set; }
     private float _cooldownTime;
      private Coroutine _activeCoroutine;
-     private bool _isTryingToBeUsed;
+     protected bool _isTryingToBeUsed;
      protected AbilitySystem _abilitySystem;
      protected Chicken _chicken;
      public float CooldownPercent => _cooldownTime / Cooldown;

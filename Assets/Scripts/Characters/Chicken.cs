@@ -310,11 +310,19 @@ public class Chicken : NetworkBehaviour, IControllable
         }
     }
     [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Owner)]
-    public void StopParticleRPC(string key)
+    public void StopParticleRPC(string key, float setLifetimePercent=0)
     {
         if (_particles.TryGetValue(key, out ParticleSystem system))
         {
             system.Stop();
+            ParticleSystem.Particle[] particles = new ParticleSystem.Particle[system.main.maxParticles];
+          int count =  system.GetParticles(particles);
+          float newLife = setLifetimePercent * system.main.duration;
+          for (int i = 0; i < count; i++)
+          {
+              particles[i].startLifetime = newLife;
+          }
+            system.SetParticles(particles, count );
         }
         else
         {

@@ -39,9 +39,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Edge_width: 0.551
+    - _NumHexagons: 0.638
     - _QueueControl: 0
     - _QueueOffset: 0
-    m_Colors: []
+    - _Size: 10
+    - _Speed: 0.1
+    m_Colors:
+    - _HexagonColour: {r: 0, g: 4.382784, b: 19.467701, a: 0.12941177}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &8821014397220575255
