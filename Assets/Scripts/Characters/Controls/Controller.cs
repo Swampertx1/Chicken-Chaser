@@ -4,17 +4,24 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public  class Controller : MonoBehaviour
 {
-   PlayerInput playerInput;
-    private void Start()
+    private IControllable[] _controllables;
+    private PlayerInput playerInput;
+    private void Awake()
     {
-         playerInput = GetComponent<PlayerInput>();
-         var Controllables = GetComponentsInChildren<IControllable>();
-         foreach (var controllable in Controllables)
-         {
-             controllable.OnControlsGained(playerInput);
-             
-         }
-         playerInput.actions.Enable();
+        playerInput = GetComponent<PlayerInput>();
+        Possess(gameObject);
+    }
+
+    public void Possess(GameObject target)
+    {
+        _controllables = GetComponentsInChildren<IControllable>();
+
+        foreach (var controllable in _controllables)
+        {
+            controllable.OnControlsGained(playerInput);
+            
+        }
+        playerInput.actions.Enable();
     }
 
     private void OnEnable()

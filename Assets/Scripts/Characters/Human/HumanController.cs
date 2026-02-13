@@ -1,9 +1,10 @@
 ﻿using ScriptableObjects;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Characters
 {
-    public class HumanController : MonoBehaviour
+    public class HumanController : MonoBehaviour, IControllable
     {
         public Animator Animator { get; private set; }
         public AudioSource AudioSource { get; private set; }
@@ -68,6 +69,11 @@ namespace Characters
             humanPlayerModule.OnControllerEnabled(this);
             _currentController = humanPlayerModule;
             return true;
+        }
+
+        public void OnControlsGained(PlayerInput input)
+        {
+            
         }
     }
 }
