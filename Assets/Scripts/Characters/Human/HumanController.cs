@@ -4,10 +4,12 @@ using UnityEngine.InputSystem;
 
 namespace Characters
 {
+    [DefaultExecutionOrder(100)]
     public class HumanController : MonoBehaviour, IControllable
     {
         public Animator Animator { get; private set; }
         public AudioSource AudioSource { get; private set; }
+        public Rigidbody Rigidbody { get; private set; }
     
         [SerializeField] private AiStats stats;
         
@@ -27,18 +29,23 @@ namespace Characters
         {
             Animator = GetComponentInChildren<Animator>();
             AudioSource = GetComponentInChildren<AudioSource>();
+            Rigidbody = GetComponentInChildren<Rigidbody>();
             _currentController = GetComponent<IHuman>();
             
         }
 
         private void Start()
         {
+            if (IsPlayerControlled) return;
             SwitchToAI();
         }
 
 
         public bool SwitchToAI()
-        {
+        {        
+            Debug.Log("Switching to AI PLAYER");
+
+            
             if (!humanAIModule)
             {
                 Debug.LogError("NO AI MODULE", gameObject);
@@ -48,31 +55,41 @@ namespace Characters
             if (humanPlayerModule)
             {
                 humanPlayerModule.OnControllerDisabled();
+                humanPlayerModule.enabled = false;
+
             }
+            
             humanAIModule.OnControllerEnabled(this);
+            humanAIModule.enabled = true;
+
             _currentController = humanAIModule;
             return true;
         }
     
-        public bool SwitchToPlayerControl()
+        public void SwitchToPlayerControl()
         {
+            Debug.Log("Switching to HUMAN PLAYER");
+
             if (!humanPlayerModule)
             {
                 Debug.LogError("NO PLAYER MODULE", gameObject);
-                return false;
+                return;
             }
 
             if (humanAIModule)
             {
                 humanAIModule.OnControllerDisabled();
+                humanAIModule.enabled = false;
             }
             humanPlayerModule.OnControllerEnabled(this);
+            humanPlayerModule.enabled = true;
             _currentController = humanPlayerModule;
-            return true;
         }
 
         public void OnControlsGained(PlayerInput input)
         {
+            SwitchToPlayerControl();
+            humanPlayerModule.OnControlsGained(input);
             
         }
     }

@@ -41,7 +41,7 @@ namespace Characters
             var main = particles.main;
             main.startSpeed = new ParticleSystem.MinMaxCurve(force, force * 3);
             var module = particles.emission;
-            module.burstCount = (int)Mathf.Max(5, force * 2);
+            module.SetBurst(0, new ParticleSystem.Burst(0,  (int)Mathf.Max(5, force * 2)));
             
             particles.Play();
         }

@@ -5,35 +5,36 @@ using UnityEngine.InputSystem;
 public  class Controller : MonoBehaviour
 {
     private IControllable[] _controllables;
-    private PlayerInput playerInput;
+    private PlayerInput _playerInput;
     private void Awake()
     {
-        playerInput = GetComponent<PlayerInput>();
-        Possess(gameObject);
+        _playerInput = GetComponent<PlayerInput>();
+        //Possess(gameObject);
+        
+        Debug.LogWarning("If chicken is not moving, we forgot to seperate this.");
     }
 
     public void Possess(GameObject target)
     {
-        _controllables = GetComponentsInChildren<IControllable>();
+        _controllables = target.GetComponentsInChildren<IControllable>();
 
         foreach (var controllable in _controllables)
         {
-            controllable.OnControlsGained(playerInput);
-            
+            controllable.OnControlsGained(_playerInput);
         }
-        playerInput.actions.Enable();
+        _playerInput.actions.Enable();
     }
 
     private void OnEnable()
     {
-        playerInput ??= GetComponent<PlayerInput>();
-        playerInput?.actions.Enable();
+        _playerInput ??= GetComponent<PlayerInput>();
+        _playerInput?.actions.Enable();
     }
 
     private void OnDisable()
     {
-        playerInput ??= GetComponent<PlayerInput>();
-        playerInput?.actions.Disable();
+        _playerInput ??= GetComponent<PlayerInput>();
+        _playerInput?.actions.Disable();
     }
     
   /////  private static Inputs inputs;

@@ -1,19 +1,31 @@
-using System;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpawnDesiredCharacter : NetworkBehaviour
 {
     [SerializeField] private NetworkObject[] characterToSpawn;
     [SerializeField] private Controller controllerPrefab;
-    
+    [SerializeField] private Button buttonPrefab;
+    [SerializeField] private Transform parent;
+
+    private void Awake()
+    {
+
+        for (var index = 0; index < characterToSpawn.Length; index++)
+        {
+            var t = characterToSpawn[index];
+            var x = Instantiate(buttonPrefab, parent);
+            x.GetComponentInChildren<TextMeshProUGUI>().text = t.name;
+            var index1 = index;
+            x.onClick.AddListener(()=>SpawnCharacter(index1));
+        }
+    }
+
     public void SpawnCharacter(int id)
     {
         RequestSpawnCharacter_ServerRpc(id);
-        
-        //Keep ourselves alive if we've 
-        if(IsServer) gameObject.SetActive(false);
-        else  Destroy(gameObject);
     }
     
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
@@ -21,24 +33,39 @@ public class SpawnDesiredCharacter : NetworkBehaviour
     {
         var character = Instantiate(characterToSpawn[id]);
         character.SpawnAsPlayerObject(@params.Receive.SenderClientId);
-      //  RequestSpawnClient_ClientRpc();
-        
+
+        var clientRpcParams = RpcTarget.Single(@params.Receive.SenderClientId, RpcTargetUse.Temp);
+       
+        RequestSpawnClient_ClientRpc(character.NetworkObjectId, clientRpcParams);
+    
         Debug.Log($"A player ({@params.Receive.SenderClientId}) is spawning in as {character.name}", character);
     }
 
-    [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
+    [Rpc(SendTo.SpecifiedInParams, InvokePermission = RpcInvokePermission.Server)]
     private void RequestSpawnClient_ClientRpc(ulong objectID, RpcParams @params)
     {
-        //controllerPrefab.Possess();
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectID, out NetworkObject networkObject))
+        {
+            // Get the component you want to possess from the network object
+            Instantiate(controllerPrefab).Possess(networkObject.gameObject);
+            
+            //Keep ourselves alive if we've 
+            if(IsServer) gameObject.SetActive(false);
+            else Destroy(gameObject);
+        }
+        else
+        {
+            Debug.LogError($"Could not find spawned object with ID {objectID}");
+        }
     }
 
 #if UNITY_EDITOR
-    private int previous = 0;
+    private int _previous = 0;
     private void OnDrawGizmosSelected()
     {
-        if (characterToSpawn.Length != previous)
+        if (characterToSpawn.Length != _previous)
         {
-            previous = characterToSpawn.Length;
+            _previous = characterToSpawn.Length;
             foreach (NetworkObject obj in characterToSpawn)
             {
                 if(!obj.TryGetComponent(out IControllable _))

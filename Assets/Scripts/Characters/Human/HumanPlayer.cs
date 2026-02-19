@@ -1,41 +1,53 @@
-﻿using UnityEngine;
+﻿using System;
+using Unity.Cinemachine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Characters
 {
-    public class HumanPlayer : Human, IControllable
+    public class HumanPlayer : Human
     {
         private PlayerInput _playerInput;
         private InputAction _moveAction;
         private InputAction _sprintAction;
-        
-        private Vector2 _moveInput;
+
+        private Vector3 _currentMoveDirection;
         private bool _isSprinting;
-        private bool _isEnabled;
-        private Camera _camera;
+        
+        [SerializeField]private float maxSpeed = 6; 
+        [SerializeField]private float maxSprintSpeed = 8; 
+        [SerializeField]private float moveSpeed = 4;
+        [SerializeField]private float sprintMoveSpeed = 6;
 
-        private void Start()
-        {
-            _camera = Camera.main;
-        }
+        private float currentMoveSpeed => _isSprinting ? sprintMoveSpeed : moveSpeed;
+        private float currentMaxSpeed => _isSprinting ? maxSprintSpeed : maxSpeed;
+        
+        [SerializeField] private CinemachineCamera cam;
+        [SerializeField] private Transform head; //<< We're actually gunna use like the entire upperhalf body
+        [SerializeField] private Transform body;
+        [SerializeField] private float mouseSensitivity = 1f;
+        [SerializeField, Range(0, 89.9f)] private float maxPitch = 80f;
 
-        private void Awake()
-        {
-            // Player-specific initialization if needed
-        }
-
-        public override float Speed => _moveInput.sqrMagnitude;
+        private InputAction _lookAction;
+        private Vector2 _lookInput;
+        
+        public override float Speed => new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z).magnitude;
 
         public override void OnControllerEnabled(HumanController controller)
         {
-            _controller = controller;
+            enabled = true;
+            this.controller = controller;
 
-            _isEnabled = true;
+            cam.enabled = true;
+            Rigidbody.isKinematic = false;
         }
 
         public override void OnControllerDisabled()
         {
-            _isEnabled = false;
+            enabled = false;
+            cam.enabled = false;
+            Rigidbody.isKinematic = true;
+
             
             // Clean up input bindings
             if (_moveAction != null)
@@ -50,7 +62,7 @@ namespace Characters
                 _sprintAction.canceled -= OnSprint;
             }
 
-            _moveInput = Vector2.zero;
+            _currentMoveDirection = Vector3.zero;
             _isSprinting = false;
             
         }
@@ -60,57 +72,56 @@ namespace Characters
             Debug.Log("Roll Ended");
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            if (!_isEnabled) return;
-
-            UpdateAnimation();
             HandleMovement();
+        }
+
+        private void LateUpdate()
+        {
+            UpdateAnimation();
+            Look();
         }
 
         private void HandleMovement()
         {
-            if (_moveInput.sqrMagnitude > 0.01f)
+            Rigidbody.AddForce(transform.rotation * _currentMoveDirection * currentMoveSpeed, ForceMode.VelocityChange);
+            Vector3 velocity = Rigidbody.linearVelocity;
+            velocity.y = 0;
+            float currentSpeed = velocity.magnitude;
+            
+            float max = currentMaxSpeed;
+            if (currentSpeed > max)
             {
-                // Get camera-relative movement direction
-                Vector3 moveDirection = GetCameraRelativeMovement();
-                
-                // Set agent speed based on sprint
-                float currentSpeed = _isSprinting ? _controller.Stats.ChaseMoveSpeed : _controller.Stats.BaseMoveSpeed;
-      
-                
-                // Rotate to face movement direction
-                if (moveDirection != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _controller.Stats.BaseMoveSpeed);
-                }
+                Vector3 direction = velocity / currentSpeed;
+                direction.y = Rigidbody.linearVelocity.y;
+                Rigidbody.linearVelocity = new Vector3(direction.x * max, direction.y, direction.z * max);
             }
         }
 
-        private Vector3 GetCameraRelativeMovement()
+        
+        private void Look()
         {
-            // Get camera forward and right vectors (flattened to horizontal plane)
-            Transform cameraTransform = _camera.transform;
-            Vector3 forward = cameraTransform.forward;
-            Vector3 right = cameraTransform.right;
-            
-            forward.y = 0f;
-            right.y = 0f;
-            forward.Normalize();
-            right.Normalize();
-            
-            // Calculate movement direction relative to camera
-            return (forward * _moveInput.y + right * _moveInput.x).normalized;
-        }
+            Vector2 direction = _lookInput * mouseSensitivity;
+            body.Rotate(Vector3.up, direction.x);
 
+            float pitch = head.localEulerAngles.x + direction.y;
+
+            if (pitch > maxPitch && pitch < 180)
+                pitch = maxPitch;
+            else if (pitch < 360 - maxPitch && pitch > 180)
+                pitch = 360 - maxPitch;
+
+            head.localEulerAngles = new Vector3(pitch, 0, 0);
+        }
+        
         protected override void UpdateAnimation()
         {
             base.UpdateAnimation();
             
             // You can add player-specific animations here
             // For example, different animations for sprinting
-            if (_isSprinting && _moveInput.sqrMagnitude > 0.01f)
+            if (_isSprinting && _currentMoveDirection.sqrMagnitude > 0.01f)
             {
                 // Animator.SetBool("IsSprinting", true);
             }
@@ -122,28 +133,30 @@ namespace Characters
         {
             _playerInput = input;
             
-            // Bind movement actions
             _moveAction = _playerInput.actions["Move"];
             _moveAction.performed += OnMove;
-            _moveAction.canceled += OnMove;
             
-            // Bind sprint action (if you have one)
             _sprintAction = _playerInput.actions["Sprint"];
-            if (_sprintAction != null)
-            {
-                _sprintAction.performed += OnSprint;
-                _sprintAction.canceled += OnSprint;
-            }
+            _sprintAction.performed += OnSprint;
+            
+            _sprintAction = _playerInput.actions["Look"];
+            _sprintAction.performed += OnLook;
         }
 
         private void OnMove(InputAction.CallbackContext context)
         {
-            _moveInput = context.ReadValue<Vector2>();
+            Vector2 x = context.ReadValue<Vector2>();
+            _currentMoveDirection = new Vector3(x.x, 0, x.y);
         }
 
         private void OnSprint(InputAction.CallbackContext context)
         {
-            _isSprinting = context.performed;
+            _isSprinting = context.ReadValueAsButton();
+        }
+        
+        private void OnLook(InputAction.CallbackContext context)
+        {
+            _lookInput = context.ReadValue<Vector2>();
         }
 
         #endregion

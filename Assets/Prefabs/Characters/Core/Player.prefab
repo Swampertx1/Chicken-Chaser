@@ -348,7 +348,6 @@ GameObject:
   - component: {fileID: 809461647961312687}
   - component: {fileID: 9164645026253894372}
   - component: {fileID: 2574794325210201386}
-  - component: {fileID: 204900305841662244}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -623,21 +622,6 @@ MonoBehaviour:
   - {fileID: 4502397460661641334}
   - {fileID: 122106936756341723}
   - {fileID: 6595316378325220497}
---- !u!114 &204900305841662244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5662061587206153138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d622fe4491589f340b19faf7ef072398, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterSpawnController
-  ShowTopMostFoldoutHeaderGroup: 1
-  playerInput: {fileID: -944628639613478452, guid: ee04185383226d64fa596f0b39f4a3d3,
-    type: 3}
 --- !u!1 &7122714289872424543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1055,8 +1039,75 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4317008982676661672, guid: 70c862bc985975547b6e20d5e1c01aea,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8188568870829463845}
   m_SourcePrefab: {fileID: 100100000, guid: 70c862bc985975547b6e20d5e1c01aea, type: 3}
+--- !u!1 &1362392486252781677 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4317008982676661672, guid: 70c862bc985975547b6e20d5e1c01aea,
+    type: 3}
+  m_PrefabInstance: {fileID: 2954687306585261509}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8188568870829463845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362392486252781677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkAnimator
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: 2131622281
+    TransitionDuration: 0.05
+    TriggerNameHash: 125937960
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: 1137713823
+    TransitionDuration: 0.05
+    TriggerNameHash: 995914302
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 765711723
+    DestinationState: 2131622281
+    TransitionDuration: 0.05
+    TriggerNameHash: 125937960
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 765711723
+    DestinationState: 1137713823
+    TransitionDuration: 0.05
+    TriggerNameHash: 995914302
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2015612229
+    DestinationState: 1137713823
+    TransitionDuration: 0.25
+    TriggerNameHash: 995914302
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2015612229
+    DestinationState: 2131622281
+    TransitionDuration: 0.05
+    TriggerNameHash: 125937960
+    TransitionIndex: 1
+  m_Animator: {fileID: 8772373477276536440}
 --- !u!82 &2577906272591026871 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 776792234091929458, guid: 70c862bc985975547b6e20d5e1c01aea,
