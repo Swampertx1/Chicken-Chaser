@@ -1,38 +1,51 @@
-using System;
 using Characters;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Utilities;
 
 /// <summary>
-/// This object is thrown by the human, and just simulates trajectory so that the cages don't go through the floor.
+/// Thrown by the human, simulates arc trajectory. Once it settles,
+/// spawns a ChickenTrapLander above the landing point to drop the cage down.
+/// Server-authoritative — clients just see the visual child object move.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class ThrowZone : MonoBehaviour
+public class ThrowZone : NetworkBehaviour
 {
     [SerializeField] private ChickenTrapLander trapPrefab;
     [SerializeField] private ParticleSystem onLandParticle;
 
     private const float MinSpeed = 0.1f;
-
     private const float SpawnRadiusCheck = 0.4f;
     private const float SpawnHeight = 15;
+
     private Rigidbody _rb;
     private ITrappable _caught;
+    private ulong _caughtNetworkId;
+    private float _lifeTime;
 
-    private float lifeTime;
+    public override void OnNetworkSpawn()
+    {
+        _rb = GetComponent<Rigidbody>();
 
-    // Update is called once per frame
+        // Clients don't need to simulate anything — physics is server-driven
+        if (!IsServer)
+        {
+            _rb.isKinematic = true;
+        }
+    }
+
     void FixedUpdate()
     {
+        if (!IsServer) return;
+
+        _lifeTime += Time.fixedDeltaTime;
         float speed = _rb.linearVelocity.sqrMagnitude;
-        //If we reach this point, we have achieved our goal
-        lifeTime += Time.fixedDeltaTime;
-        if (lifeTime > 0.5f && speed < MinSpeed)
+
+        if (_lifeTime > 0.5f && speed < MinSpeed)
         {
-            print("Activating ThrowZone : " + speed);
             Vector3 startPoint;
             Vector3 velocity = Vector3.down;
+
             if (Physics.SphereCast(transform.position, SpawnRadiusCheck, Vector3.up, out RaycastHit hit, SpawnHeight))
             {
                 startPoint = transform.position + Vector3.up * (hit.distance - SpawnRadiusCheck * 2);
@@ -43,43 +56,51 @@ public class ThrowZone : MonoBehaviour
                 startPoint = transform.position + SpawnHeight * Vector3.up;
                 velocity *= SpawnHeight;
             }
-            
-            //_collider.enabled = true;
 
-            //Spawn in a cage object directly above us
+            // Detach the visual child before we despawn, so it doesn't vanish with us
+            // ChickenTrapLander will re-parent it to the cage when it lands
+            Transform visual = transform.GetChild(0);
+            visual.SetParent(null, true);
+
+            // Spawn the cage dropper
             ChickenTrapLander trap = Instantiate(trapPrefab, startPoint, Quaternion.identity);
-            SceneManager.MoveGameObjectToScene(trap.gameObject, SceneManager.GetSceneByBuildIndex(2));
-            trap.Initialize(velocity, _caught);
-            
-            //Leave our child parentless temporarily.
-            transform.GetChild(0).SetParent(null, true);
+            trap.GetComponent<NetworkObject>().Spawn();
+            trap.Initialize(velocity, _caught, _caughtNetworkId);
 
-            ParticleSystem ps = Instantiate(onLandParticle, transform.position, Quaternion.LookRotation(transform.up));
-            ps.Play();
-            Destroy(ps.gameObject ,3);
+            PlayLandEffectClientRpc(transform.position);
 
-            //Destroy ourselves, we've served our purpose.
-            Destroy(gameObject);
+            NetworkObject.Despawn();
         }
     }
 
-    public void Initialize(Vector3 force, ITrappable caught)
+    /// <summary>
+    /// Called server-side by CaptureZone after spawning this object.
+    /// </summary>
+    public void Initialize(Vector3 force, ITrappable caught, ulong caughtNetworkId)
     {
-        _caught = caught;
-        Transform tr = caught.GetTransform();
-        tr.parent = transform;
-        tr.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        
         _rb = GetComponent<Rigidbody>();
-        
-  
+        _caught = caught;
+        _caughtNetworkId = caughtNetworkId;
+
+        // Move the caught entity to follow the throw zone in world space
+        Transform tr = caught.GetTransform();
+        tr.SetParent(transform, true);
+        tr.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
         _rb.linearVelocity = force;
     }
+
+    [ClientRpc]
+    private void PlayLandEffectClientRpc(Vector3 position)
+    {
+        ParticleSystem ps = Instantiate(onLandParticle, position, Quaternion.LookRotation(transform.up));
+        ps.Play();
+        Destroy(ps.gameObject, 3);
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
         GizmosExtras.DrawWireSphereCast(transform.position, Vector3.up, SpawnHeight, SpawnRadiusCheck);
     }
-
-    
 }

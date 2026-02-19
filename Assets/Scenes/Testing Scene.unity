@@ -297,25 +297,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 126559044060200651, guid: 1f7efe38d14e5a34296582b227b8c872,
+    - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
-      propertyPath: AvoidObstacles.IgnoreTag
-      value: 
+      propertyPath: m_RotationOffset.x
+      value: 23.59214
       objectReference: {fileID: 0}
-    - target: {fileID: 2809660612464871091, guid: 1f7efe38d14e5a34296582b227b8c872,
+    - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.8590656
+      propertyPath: m_RotationOffset.y
+      value: 29.971136
       objectReference: {fileID: 0}
-    - target: {fileID: 2809660612464871091, guid: 1f7efe38d14e5a34296582b227b8c872,
+    - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.323611
-      objectReference: {fileID: 0}
-    - target: {fileID: 2809660612464871091, guid: 1f7efe38d14e5a34296582b227b8c872,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.7171888
+      propertyPath: m_RotationOffset.z
+      value: 12.996311
       objectReference: {fileID: 0}
     - target: {fileID: 5301832399582980392, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
@@ -386,6 +381,26 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 4026535291
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090133240822046308, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: m_RotationAtRest.x
+      value: 0.00043988202
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090133240822046308, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: m_RotationOffset.x
+      value: 23.592571
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090133240822046308, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: m_RotationOffset.y
+      value: 29.971218
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090133240822046308, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: m_RotationOffset.z
+      value: 12.996345
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

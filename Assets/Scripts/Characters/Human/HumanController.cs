@@ -1,11 +1,13 @@
-﻿using ScriptableObjects;
+﻿using Game;
+using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Characters
 {
     [DefaultExecutionOrder(100)]
-    public class HumanController : MonoBehaviour, IControllable
+    public class HumanController : NetworkBehaviour, IControllable
     {
         public Animator Animator { get; private set; }
         public AudioSource AudioSource { get; private set; }
@@ -36,12 +38,13 @@ namespace Characters
 
         private void Start()
         {
-            if (IsPlayerControlled) return;
-            SwitchToAI();
+            if (IsPlayerControlled || NetworkManager.isActiveAndEnabled) return;
+            SwitchToAI_Rpc();
         }
 
 
-        public bool SwitchToAI()
+        [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Server)]
+        public void SwitchToAI_Rpc()
         {        
             Debug.Log("Switching to AI PLAYER");
 
@@ -49,7 +52,7 @@ namespace Characters
             if (!humanAIModule)
             {
                 Debug.LogError("NO AI MODULE", gameObject);
-                return false;
+                return;
             }
 
             if (humanPlayerModule)
@@ -63,10 +66,9 @@ namespace Characters
             humanAIModule.enabled = true;
 
             _currentController = humanAIModule;
-            return true;
         }
-    
-        public void SwitchToPlayerControl()
+        [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Owner)]
+        public void SwitchToPlayerControl_Rpc()
         {
             Debug.Log("Switching to HUMAN PLAYER");
 
@@ -88,9 +90,8 @@ namespace Characters
 
         public void OnControlsGained(PlayerInput input)
         {
-            SwitchToPlayerControl();
+            SwitchToPlayerControl_Rpc();
             humanPlayerModule.OnControlsGained(input);
-            
         }
     }
 }

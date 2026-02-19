@@ -1,14 +1,14 @@
 using Characters;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Utilities;
 
 namespace Game
 {
-    public class CaptureZone : MonoBehaviour
+    public class CaptureZone : NetworkBehaviour
     {
-        [SerializeField] private ThrowZone throwObject;
+        [SerializeField] private ChickenTrapLander trapPrefab; // Changed from ThrowZone — see note below
         [SerializeField] private Transform chickenPoint;
         [SerializeField] private float throwForce;
 
@@ -17,6 +17,8 @@ namespace Game
         private Human _human;
         private Animator _animator;
         private ITrappable _caught;
+        private ulong _caughtNetworkId;
+
         private void Awake()
         {
             _human = GetComponentInParent<Human>();
@@ -24,52 +26,59 @@ namespace Game
             _collider = GetComponent<Collider>();
         }
 
-        //If when we're enabled, something has entered our trigger, then we know we've caught them
         private void OnTriggerEnter(Collider other)
         {
-            //Firstly, let's check to see it's a chicken and that chicken is an active chicken
+            // Trigger detection should only matter on the server
+            if (!IsServer) return;
+
             if (other.attachedRigidbody.TryGetComponent(out _caught) && _caught.CanBeTrapped())
             {
-                //From here, we need to disable the chicken
+                // Cache the network ID so we can pass it to the lander
+                _caughtNetworkId = _caught.GetTransform()
+                    .GetComponent<NetworkObject>().NetworkObjectId;
+
                 _caught.OnPreCapture();
-                
-                //And attach it to our grapple point
+
                 Transform tr = _caught.GetTransform();
                 tr.SetParent(chickenPoint, true);
                 tr.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-                    
-                //We then need to play the throw chicken animation
-                _animator.SetTrigger(StaticUtilities.BeginCaptureAnimID);
+                // Trigger the animation on all clients
+                TriggerCaptureAnimClientRpc();
                 enabled = false;
-                //We can spawn in a cage on the cage point and make the chicken a child of the cage
-                
-
             }
         }
 
+        [ClientRpc]
+        private void TriggerCaptureAnimClientRpc()
+        {
+            _animator.SetTrigger(StaticUtilities.BeginCaptureAnimID);
+        }
 
         private void OnEnable()
         {
             _collider.enabled = true;
         }
 
-        //If we've been disabled, make s
         private void OnDisable()
         {
             _human.EndRoll();
             _collider.enabled = false;
         }
 
+        /// <summary>
+        /// Called by animation event. Must only fire on the server, or guard with IsServer.
+        /// </summary>
         public void ThrowCaptureObject()
         {
-            //Imagine throwing a pokeball, we need to give full responsibility to the thrower object.
-            //You could change this code so that you use an interface, ICapturable and in theory catch anything.
-            
-            var trap = Instantiate(throwObject, chickenPoint.position, Quaternion.identity);
-            SceneManager.MoveGameObjectToScene(trap.gameObject, SceneManager.GetSceneByBuildIndex(2));
-            trap .Initialize(transform.forward * throwForce, _caught);
+            if (!IsServer) return;
 
+            GameObject trapGO = Instantiate(trapPrefab.gameObject, chickenPoint.position, Quaternion.identity);
+            NetworkObject netObj = trapGO.GetComponent<NetworkObject>();
+            netObj.Spawn();
+
+            ChickenTrapLander lander = trapGO.GetComponent<ChickenTrapLander>();
+            lander.Initialize(transform.forward * throwForce, _caught, _caughtNetworkId);
         }
     }
 }

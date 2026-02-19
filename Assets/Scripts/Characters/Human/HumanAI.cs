@@ -35,7 +35,7 @@ namespace Characters
         private float _timeSinceLastSpoken;
 
         private static readonly WaitForSeconds TimerDelay = new WaitForSeconds(0.016f);
-        
+
         private PathHandler _pathHandler;
         private Coroutine _decayTimer;
         private Coroutine _currentRoutine;
@@ -50,27 +50,22 @@ namespace Characters
             _agent = GetComponent<NavMeshAgent>();
         }
 
-
         public override void OnControllerEnabled(HumanController controller)
         {
             this.controller = controller;
             enabled = true;
             _agent.enabled = true;
             _pathHandler.enabled = true;
-            
-            // Initialize AI state
+
             _myState = EHumanState.Pathing;
             _agent.speed = base.controller.Stats.BaseMoveSpeed;
-            
+
             _currentDetection = 0;
             _detectionBarMat.SetFloat(StaticUtilities.FillMatID, 0);
 
             _detectionModifier = base.controller.Stats.IdleStateDetectionModifier;
-            
-            // Start AI behavior
+
             _currentRoutine = StartCoroutine(Pathing());
-            
-           
         }
 
         public override void OnControllerDisabled()
@@ -78,40 +73,38 @@ namespace Characters
             enabled = false;
             _agent.enabled = false;
             _pathHandler.enabled = false;
-            
-            // Clean up AI coroutines
+
             if (_currentRoutine != null)
             {
                 StopCoroutine(_currentRoutine);
                 _currentRoutine = null;
             }
-            
+
             if (_decayTimer != null)
             {
                 StopCoroutine(_decayTimer);
                 _decayTimer = null;
             }
-            
-            // Reset animations
+
             Animator.SetBool(StaticUtilities.IsSearchingAnimID, false);
             Animator.SetFloat(StaticUtilities.MoveSpeedAnimID, 0);
 
+            StopRoll();
+
             if (!_agent.isOnNavMesh) return;
-            
-            // Stop agent
+
             _agent.isStopped = true;
             _agent.ResetPath();
-            
-            _agent.updateRotation = false; // Player handles rotation
+            _agent.updateRotation = false;
             _agent.speed = controller.Stats.BaseMoveSpeed;
         }
 
         private void Update()
         {
             UpdateAnimation();
-            
+
             float dt = Time.deltaTime;
-            
+
             if (_isDetectionDecaying)
             {
                 RemoveDetection(controller.Stats.DetectionDecayRate * dt);
@@ -121,33 +114,18 @@ namespace Characters
             {
                 FaceTarget(_suggestedForward);
             }
-            
-            if (_myState is EHumanState.Rolling)
-            {
-                HandleRollingMovement(dt);
-            }
-        }
-
-        private void HandleRollingMovement(float dt)
-        {
-            if (!Physics.Raycast(transform.position + Vector3.up, _suggestedForward, 1, StaticUtilities.GroundLayers))
-            {
-                if (Physics.Raycast(transform.position, Vector3.down, out var ground, 1, StaticUtilities.GroundLayers))
-                { 
-                    transform.Translate(Vector3.ProjectOnPlane(_suggestedForward, ground.normal) * (controller.Stats.RollSpeed * dt), Space.World);
-                }
-            }
         }
 
         #region AILogic
-        
+
         private IEnumerator Idle()
         {
             _myState = EHumanState.Idle;
             if (_previousSuggestedDelay != 0)
             {
                 _suggestedForward = _pathHandler.GetSuggestedForward();
-                yield return new WaitForSeconds(Random.Range(controller.Stats.MinIdleTime + _previousSuggestedDelay,
+                yield return new WaitForSeconds(Random.Range(
+                    controller.Stats.MinIdleTime + _previousSuggestedDelay,
                     controller.Stats.MaxIdleTime + _previousSuggestedDelay));
             }
 
@@ -158,14 +136,14 @@ namespace Characters
         {
             _pathHandler.SetNextPatrolPoint();
             _myState = EHumanState.Pathing;
-            
+
             yield return new WaitWhile(() => _agent.pathPending);
-            
-            while(!_pathHandler.HasReachedDestination(out _previousSuggestedDelay))
+
+            while (!_pathHandler.HasReachedDestination(out _previousSuggestedDelay))
             {
                 yield return TimerDelay;
             }
-            
+
             _currentRoutine = StartCoroutine(Idle());
         }
 
@@ -174,43 +152,48 @@ namespace Characters
             _myState = EHumanState.Looking;
             _agent.speed = controller.Stats.ChaseMoveSpeed;
             _agent.isStopped = true;
-            
+
             float nt = Time.timeSinceLevelLoad;
             if (nt - controller.Stats.TimeNeededToTalk >= _timeSinceLastSpoken)
             {
                 _timeSinceLastSpoken = nt;
-                AudioSource.PlayOneShot(controller.Stats.GetRandomHuh(), SettingsManager.currentSettings.SoundVolume * controller.Stats.HuhLoudness);
+                AudioSource.PlayOneShot(controller.Stats.GetRandomHuh(),
+                    SettingsManager.currentSettings.SoundVolume * controller.Stats.HuhLoudness);
             }
-            
+
             Animator.SetBool(StaticUtilities.IsSearchingAnimID, true);
             _detectionModifier = controller.Stats.LookingStateDetectionModifier;
 
             _suggestedForward = target - transform.position;
-            
-            while(_currentDetection > 0f)
+
+            while (_currentDetection > 0f)
             {
                 yield return TimerDelay;
-                _suggestedForward = Quaternion.Euler(0, Random.Range(-controller.Stats.LookRotationAngle, controller.Stats.LookRotationAngle), 0) * _suggestedForward;
+                _suggestedForward = Quaternion.Euler(0,
+                    Random.Range(-controller.Stats.LookRotationAngle, controller.Stats.LookRotationAngle), 0)
+                    * _suggestedForward;
             }
-            
+
             Animator.SetBool(StaticUtilities.IsSearchingAnimID, false);
             _detectionModifier = controller.Stats.IdleStateDetectionModifier;
 
-            if(_currentRoutine != null) StopCoroutine(_currentRoutine);
+            if (_currentRoutine != null) StopCoroutine(_currentRoutine);
             _currentRoutine = StartCoroutine(Pathing());
             _agent.speed = controller.Stats.BaseMoveSpeed;
             _agent.isStopped = false;
         }
-        
+
         private void Chasing(Vector3 target)
         {
             _agent.isStopped = false;
             _timeSinceLastSpoken = Time.timeSinceLevelLoad;
             _myState = EHumanState.Chasing;
-            
-            AudioSource.PlayOneShot(controller.Stats.GetRandomHey(), SettingsManager.currentSettings.SoundVolume * controller.Stats.HeyLoudness);
-            AudioDetection.onSoundPlayed.Invoke(transform.position, controller.Stats.HeyLoudness, controller.Stats.HeyLoudness * 10, EAudioLayer.Human);
-            
+
+            AudioSource.PlayOneShot(controller.Stats.GetRandomHey(),
+                SettingsManager.currentSettings.SoundVolume * controller.Stats.HeyLoudness);
+            AudioDetection.onSoundPlayed.Invoke(transform.position, controller.Stats.HeyLoudness,
+                controller.Stats.HeyLoudness * 10, EAudioLayer.Human);
+
             Animator.SetBool(StaticUtilities.IsSearchingAnimID, false);
             _agent.destination = target;
 
@@ -230,54 +213,56 @@ namespace Characters
 
         public void AddDetection(Vector3 location, float detection, EDetectionType detectionType)
         {
-            if (_myState == EHumanState.Rolling || 
+            if (_myState == EHumanState.Rolling ||
                 _myState == EHumanState.Chasing && (detectionType & controller.Stats.IgnoreWhileChasing) != 0)
                 return;
-            
-            _currentDetection = Mathf.Min(_currentDetection + detection * _detectionModifier, controller.Stats.MaxDetection);
+
+            _currentDetection = Mathf.Min(_currentDetection + detection * _detectionModifier,
+                controller.Stats.MaxDetection);
             float detectPerc = _currentDetection / controller.Stats.MaxDetection;
             _detectionBarMat.SetFloat(StaticUtilities.FillMatID, detectPerc);
-            
+
             if (detectPerc >= 0.5f && _myState != EHumanState.Chasing && _myState != EHumanState.Looking)
             {
-                if(_currentRoutine != null) StopCoroutine(_currentRoutine);
+                if (_currentRoutine != null) StopCoroutine(_currentRoutine);
                 _currentRoutine = StartCoroutine(Looking(location));
             }
             else if (detectPerc >= 1f)
             {
                 if (_myState == EHumanState.Looking)
                 {
-                    if(_currentRoutine != null) StopCoroutine(_currentRoutine);
+                    if (_currentRoutine != null) StopCoroutine(_currentRoutine);
                     Chasing(location);
                 }
-                
+
                 _agent.SetDestination(location);
-                
-                Vector3 direction = (location - transform.position);
+
+                Vector3 direction = location - transform.position;
                 float distance = direction.magnitude;
-                
-                if (distance <= controller.Stats.DiveDistance && Vector3.Dot(transform.forward, direction) > 0.5)
+
+                if (distance <= controller.Stats.DiveDistance &&
+                    Vector3.Dot(transform.forward, direction) > 0.5f)
                 {
-                    Animator.SetTrigger(StaticUtilities.CaptureAnimID);
+                    _agent.isStopped = true;
+                    if (_currentRoutine != null) StopCoroutine(_currentRoutine);
                     _myState = EHumanState.Rolling;
                     _suggestedForward = direction / distance;
-                    _agent.isStopped = true;
-                    StopCoroutine(_currentRoutine);
+                    TryRoll(_suggestedForward);
                 }
             }
-            
-            if(_decayTimer != null) StopCoroutine(_decayTimer);
+
+            if (_decayTimer != null) StopCoroutine(_decayTimer);
             _decayTimer = StartCoroutine(BeginDecayCooldown());
         }
-        
+
         private void RemoveDetection(float amount)
         {
             if (_myState == EHumanState.Rolling) return;
-            
+
             _currentDetection = Mathf.Max(_currentDetection - amount, 0);
             float detectPerc = _currentDetection / controller.Stats.MaxDetection;
             _detectionBarMat.SetFloat(StaticUtilities.FillMatID, detectPerc);
-            
+
             if (detectPerc <= 0.9f && _myState == EHumanState.Chasing)
             {
                 StopCoroutine(_currentRoutine);
@@ -287,14 +272,14 @@ namespace Characters
 
             if (detectPerc == 0) _isDetectionDecaying = false;
         }
-        
+
         private IEnumerator BeginDecayCooldown()
         {
             _isDetectionDecaying = false;
             yield return new WaitForSeconds(controller.Stats.BeginDecayCooldown);
             _isDetectionDecaying = true;
         }
-        
+
         #endregion
     }
 }
