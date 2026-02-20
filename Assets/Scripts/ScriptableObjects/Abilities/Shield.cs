@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shield : AbilityBase
 {
     public bool shieldIsActive;
-    [SerializeField]private float duration;
+     [SerializeField]private float duration;
     protected override void BuildParticles()
     {
         base.BuildParticles();
@@ -34,11 +34,13 @@ public class Shield : AbilityBase
         _chicken.PlayParticleRPC(Particles[0].name);
         shieldIsActive = true;
         Debug.Log("Shield activated");
+        _chicken.isInvernulable.Value = true;
     }
     private void DeactivateShield()
     {
         _chicken.StopParticleRPC(Particles[0].name,0.1f);
         shieldIsActive = false;
         Debug.Log("Shield deactivated");
+        _chicken.isInvernulable.Value = false;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Interfaces;
 using ScriptableObjects;
 using Unity.Cinemachine;
 using Unity.Netcode;
@@ -10,14 +11,14 @@ using UnityEngine.InputSystem;
 using Utilities;
 
 [RequireComponent(typeof(Grounding))]
-public class Chicken : NetworkBehaviour, IControllable
+public class Chicken : NetworkBehaviour, IControllable, ITrappable, IVisualDetectable
 {
     public Vector3 currentMoveDirection { get; private set; }
     private Rigidbody rb;
     private Grounding grounding;
     private Animator animator;
-    [SerializeField]private Shield shieldability;
-    [SerializeField] private float playerDamage;
+    public NetworkVariable<bool> isInvernulable = new(false, readPerm:NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     
     [SerializeField]private Transform firePoint;
     public Transform FirePoint => firePoint;
@@ -31,6 +32,7 @@ public class Chicken : NetworkBehaviour, IControllable
     [SerializeField] private Transform head;
 
     [SerializeField] private ChickenStats chickenStats;
+    private float ChickenDetection;
     [SerializeField] private Transform body;
     [SerializeField] private Transform cam;
     [SerializeField] private float mouseSensitivity = 1;
@@ -94,10 +96,7 @@ public class Chicken : NetworkBehaviour, IControllable
     {
         HandleObjectDetection();
         animator.SetFloat(StaticUtilities.MoveSpeedAnimID, rb.linearVelocity.magnitude);
-        if (shieldability && shieldability.shieldIsActive && shieldability.OnCooldown())
-        {
-            shieldability.shieldIsActive = false;
-        }
+       
         
     }
 
@@ -242,13 +241,7 @@ public class Chicken : NetworkBehaviour, IControllable
     {
         return grounding.IsGrounded && jumpCoroutine == null;
     }
-    public void TakeDamage()
-    {
-        if (shieldability != null && shieldability.shieldIsActive)
-        
-            return;
-        chickenHealth -= playerDamage;
-    }
+    
     
     private void OnDrawGizmos()
     {
@@ -342,7 +335,46 @@ public class Chicken : NetworkBehaviour, IControllable
         }
     }
     #endregion
-    
-    
-    
+
+
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+
+    public bool CanBeTrapped()
+    {
+        return !isInvernulable.Value;
+    }
+
+    public void OnCaptured()
+    {
+        
+    }
+
+    public void OnFreedFromCage()
+    {
+        
+    }
+
+    public void OnPreCapture()
+    {
+        
+    }
+
+    public void AddVisibility(float visibility)
+    {
+ChickenDetection += visibility;
+
+    }
+
+    public void RemoveVisibility(float visibility)
+    {
+        ChickenDetection -= visibility;
+    }
+
+    public float GetVisibility()
+    {
+        return ChickenDetection;
+    }
 }

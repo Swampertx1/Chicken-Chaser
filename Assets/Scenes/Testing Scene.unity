@@ -300,17 +300,17 @@ PrefabInstance:
     - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
       propertyPath: m_RotationOffset.x
-      value: 23.59214
+      value: 23.592133
       objectReference: {fileID: 0}
     - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
       propertyPath: m_RotationOffset.y
-      value: 29.971136
+      value: 29.971153
       objectReference: {fileID: 0}
     - target: {fileID: 2069260962353460954, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}
       propertyPath: m_RotationOffset.z
-      value: 12.996311
+      value: 12.996321
       objectReference: {fileID: 0}
     - target: {fileID: 5301832399582980392, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}

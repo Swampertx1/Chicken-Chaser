@@ -1944,9 +1944,9 @@ GameObject:
   m_Component:
   - component: {fileID: 214551500}
   - component: {fileID: 214551502}
+  - component: {fileID: 214551503}
   - component: {fileID: 214551501}
   - component: {fileID: 214551504}
-  - component: {fileID: 214551503}
   m_Layer: 0
   m_Name: Doors
   m_TagString: Untagged
@@ -2046,10 +2046,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WinCondition
   ShowTopMostFoldoutHeaderGroup: 1
-  activeNests: []
   NumberofEggslayed: 0
-  allNests: []
-  animator: {fileID: 0}
 --- !u!1001 &224654200
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20252,6 +20249,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 214551500}
   - {fileID: 541173417123777541}
   - {fileID: 555060968851454916}
   - {fileID: 1032417483826924188}
@@ -20260,7 +20258,6 @@ Transform:
   - {fileID: 6200413054648713481}
   - {fileID: 3924699894670032681}
   - {fileID: 7037840737922749686}
-  - {fileID: 214551500}
   - {fileID: 7525156532377792711}
   - {fileID: 8776092206831603635}
   m_Father: {fileID: 1734082692}

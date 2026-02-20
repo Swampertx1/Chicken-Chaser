@@ -4107,7 +4107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GabesCommonUtility.Multiplayer.GameObjects::GabesCommonUtility.Multiplayer.GameObjects.PlayerSpawnSequence
   ShowTopMostFoldoutHeaderGroup: 1
-  playerPrefab: {fileID: 6960144070719844066, guid: 669113f048fd89c4182f4f2d457392d8,
+  playerPrefab: {fileID: 6526094284931926984, guid: 1f7efe38d14e5a34296582b227b8c872,
     type: 3}
   randomSpawnPoint:
   - {fileID: 1854904328}
