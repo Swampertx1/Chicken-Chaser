@@ -1,52 +1,55 @@
 using UnityEngine;
 using Unity.Netcode;
+using Utilities;
 
 public class NestManager : NetworkBehaviour
 {
-    [SerializeField] private LayEggs[] allNests; 
-    [SerializeField] private int numberOfNestsToEnable = 3; 
+    [SerializeField] private LayEggs[] allNests;
+    [SerializeField] private int numberOfNestsToEnable = 3;
+    private WinCondition winCondition;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-        
+        winCondition = FindObjectOfType<WinCondition>();
+
         if (IsServer)
-        {
             EnableRandomNests();
-        }
     }
 
     private void EnableRandomNests()
     {
-       
-        LayEggs[] shuffledNests = (LayEggs[])allNests.Clone();
-        ShuffleArray(shuffledNests);
-
-       
-        foreach (var nest in allNests)
+        int nestsToActivate = Mathf.Min(numberOfNestsToEnable, allNests.Length);
+        int[] array = new int[nestsToActivate];
+        int[] nums = new int[allNests.Length];
+        for (int i = 0; i < allNests.Length; i++)
         {
-            nest.gameObject.SetActive(false);
+            nums[i] = i;
         }
-
-        
-        int nestsToActivate = Mathf.Min(numberOfNestsToEnable, shuffledNests.Length);
+        nums.Shuffle();
         for (int i = 0; i < nestsToActivate; i++)
         {
-            shuffledNests[i].gameObject.SetActive(true);
+            array[i] = nums[i];
         }
 
-        Debug.Log($"Enabled {nestsToActivate} random nests");
+        EnableNestsRpc(array);
     }
 
-    private void ShuffleArray<T>(T[] array)
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Server)]
+    private void EnableNestsRpc(int[] nestsToEnable)
     {
-        for (int i = array.Length - 1; i > 0; i--)
-        {
-            int randomIndex = Random.Range(0, i + 1);
-            T temp = array[i];
-            array[i] = array[randomIndex];
-            array[randomIndex] = temp;
-        }
+        foreach (var nest in allNests)
+            nest.gameObject.SetActive(false);
+
+        int nestsToActivate = nestsToEnable.Length;
+        for (int i = 0; i < nestsToActivate; i++)
+            allNests[nestsToEnable[i]].gameObject.SetActive(true);
+
+        LayEggs[] active = new LayEggs[nestsToEnable.Length];
+        for (int i = 0; i < nestsToEnable.Length; i++)
+            active[i] = allNests[nestsToEnable[i]];
+
+        winCondition.SetActiveNests(active);
     }
 }

@@ -10,14 +10,16 @@ public class LayEggs : NetworkBehaviour
 
     [SerializeField] private float LayingEggDuration;
     [SerializeField] private int EggLimit = 2;
-    [SerializeField] private NetworkObject[] Eggs; // Changed to NetworkObject[]
+    [SerializeField] private GameObject[] Eggs; 
     [SerializeField] private DecalProjector Progression;
     
-    private int EggCount;
+    public NetworkVariable<uint> EggCount = new();
     private Material ProgressMaterial;
     private Coroutine EggRoutine;
+   
+  
 
-    // Network variable to sync progress across all clients
+    
     private NetworkVariable<float> networkProgress = new NetworkVariable<float>(
         0f, 
         NetworkVariableReadPermission.Everyone, 
@@ -34,18 +36,29 @@ public class LayEggs : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         
+       
         // Only server randomly enables nests at game start
         if (IsServer)
         {
-            Eggs.Shuffle();
+            
             EggLimit = Mathf.Min(EggLimit, Eggs.Length);
         }
 
         // All clients subscribe to progress updates
         networkProgress.OnValueChanged += OnProgressChanged;
+        EggCount.OnValueChanged += updateEggs;
+        updateEggs(0, EggCount.Value);
         
         // Set initial progress on clients that join later
         ProgressMaterial.SetFloat(T, networkProgress.Value);
+    }
+
+    private void updateEggs(uint previousValue, uint newValue)
+    {
+        for (int i = 0; i < Eggs.Length; i++)
+        {
+            Eggs[i].SetActive(i < newValue);
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -89,7 +102,7 @@ public class LayEggs : NetworkBehaviour
 
     private IEnumerator StartLayingEggs()
     {
-        while (EggCount < EggLimit)
+        while (EggCount.Value < EggLimit)
         {
             float Timer = 0;
 
@@ -113,10 +126,9 @@ public class LayEggs : NetworkBehaviour
     private void LayEgg()
     {
         // Server spawns the egg, which makes it visible to all clients
-        NetworkObject eggNetworkObject = Eggs[EggCount];
-        eggNetworkObject.Spawn(); // This spawns it on all clients
         
-        EggCount++;
+        
+        EggCount.Value++;
         
         // Reset progress after laying
         networkProgress.Value = 0;
