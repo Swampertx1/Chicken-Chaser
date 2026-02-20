@@ -180,7 +180,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -206,8 +206,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 39729461}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.08058535, y: 0.03519406, z: 0.0028471667, w: 0.9961221}
-  m_LocalPosition: {x: 0.7041207, y: -1.9151087, z: -9.715135}
+  m_LocalRotation: {x: 0.017016122, y: 0, z: 0, w: 0.9998552}
+  m_LocalPosition: {x: -0.5, y: 0.86282295, z: -1.9852308}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -366,6 +366,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Better Human
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323346820318032175, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 126756372
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323346820318032175, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323346820318032175, guid: 1f7efe38d14e5a34296582b227b8c872,
+        type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 4026535291
       objectReference: {fileID: 0}
     - target: {fileID: 6526094284931926984, guid: 1f7efe38d14e5a34296582b227b8c872,
         type: 3}

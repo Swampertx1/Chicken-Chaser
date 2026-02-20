@@ -247,7 +247,7 @@ namespace Characters
                     if (_currentRoutine != null) StopCoroutine(_currentRoutine);
                     _myState = EHumanState.Rolling;
                     _suggestedForward = direction / distance;
-                    TryRoll(_suggestedForward);
+                    TryRoll_Rpc(_suggestedForward);
                 }
             }
 

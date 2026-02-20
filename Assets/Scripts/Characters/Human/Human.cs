@@ -33,7 +33,8 @@ namespace Characters
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * controller.Stats.BaseMoveSpeed);
         }
 
-        protected void TryRoll(Vector3 direction)
+        [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Owner)]
+        protected void TryRoll_Rpc(Vector3 direction)
         {
             if (IsRolling) return;
             _rollCoroutine = StartCoroutine(RollCoroutine(direction));

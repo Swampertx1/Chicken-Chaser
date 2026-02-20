@@ -190,7 +190,7 @@ namespace Characters
                 ? body.rotation * _currentMoveDirection
                 : body.forward;
 
-            TryRoll(rollDirection.normalized);
+            TryRoll_Rpc(rollDirection.normalized);
         }
 
         #endregion

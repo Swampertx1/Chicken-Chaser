@@ -423,7 +423,7 @@ MonoBehaviour:
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
+  AllowOwnerToParent: 1
 --- !u!114 &8401529164211304087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,8 +437,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chicken
   ShowTopMostFoldoutHeaderGroup: 1
-  shieldability: {fileID: 0}
-  playerDamage: 0
+  isInvernulable:
+    m_InternalValue: 0
   firePoint: {fileID: 6957087522654936282}
   head: {fileID: 2734304907029226763}
   chickenStats: {fileID: 11400000, guid: e95017d3c1f4e164c873cb00c69f9b93, type: 2}

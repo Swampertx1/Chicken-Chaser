@@ -639,7 +639,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1163408977302865417}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.000000374507, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.00000056176054, z: -0, w: 1}
   m_LocalPosition: {x: -0.006, y: 1.635, z: 0.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -754,8 +754,8 @@ RotationConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_RotationOffset: {x: 23.592133, y: 29.971153, z: 12.996321}
+  m_RotationAtRest: {x: 0, y: 0.00006437299, z: 0}
+  m_RotationOffset: {x: 23.592127, y: 29.971182, z: 12.996329}
   m_AffectRotationX: 0
   m_AffectRotationY: 1
   m_AffectRotationZ: 1
@@ -1192,6 +1192,7 @@ GameObject:
   - component: {fileID: 2716602830696877586}
   - component: {fileID: 7509633079970935198}
   - component: {fileID: 3172447513972566222}
+  - component: {fileID: 824405631647100380}
   m_Layer: 6
   m_Name: OldFarmer
   m_TagString: Untagged
@@ -1354,6 +1355,42 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &824405631647100380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2759530705000859542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkAnimator
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 229373857
+    DestinationState: 2146789073
+    TransitionDuration: 0.25
+    TriggerNameHash: 914991998
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 291028053
+    DestinationState: 2146789073
+    TransitionDuration: 0.25
+    TriggerNameHash: 914991998
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2146789073
+    DestinationState: -1548022970
+    TransitionDuration: 0.25
+    TriggerNameHash: -573082424
+    TransitionIndex: 0
+  m_Animator: {fileID: 2716602830696877586}
 --- !u!1 &2795360870365437512
 GameObject:
   m_ObjectHideFlags: 0
@@ -2415,7 +2452,6 @@ GameObject:
   - component: {fileID: 8965263594178200635}
   - component: {fileID: 5931781615758210236}
   - component: {fileID: 1448550860525968944}
-  - component: {fileID: 6720257735217823773}
   m_Layer: 6
   m_Name: Better Human
   m_TagString: Untagged
@@ -2674,42 +2710,6 @@ MonoBehaviour:
   UseRigidBodyForMotion: 1
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!114 &6720257735217823773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5328347672520130544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkAnimator
-  ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 229373857
-    DestinationState: 2146789073
-    TransitionDuration: 0.25
-    TriggerNameHash: 914991998
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 291028053
-    DestinationState: 2146789073
-    TransitionDuration: 0.25
-    TriggerNameHash: 914991998
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2146789073
-    DestinationState: -1548022970
-    TransitionDuration: 0.25
-    TriggerNameHash: -573082424
-    TransitionIndex: 0
-  m_Animator: {fileID: 2716602830696877586}
 --- !u!1 &5338532647017209991
 GameObject:
   m_ObjectHideFlags: 0
@@ -2783,6 +2783,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8472665998865569515}
+  - component: {fileID: 2407496136483145397}
   m_Layer: 6
   m_Name: ChickenPoint
   m_TagString: Untagged
@@ -2805,6 +2806,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7676790395954956695}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2407496136483145397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5473604527697917503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da52bf8bbc1de48cfb221a6ff30f7972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Multiplayer.Center.NetcodeForGameObjectsExample::Unity.Multiplayer.Center.NetcodeForGameObjectsExample.ClientNetworkTransform
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 1
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 1
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &5476473322921209985
 GameObject:
   m_ObjectHideFlags: 0
