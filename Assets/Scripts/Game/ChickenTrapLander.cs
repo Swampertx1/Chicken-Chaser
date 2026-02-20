@@ -16,6 +16,8 @@ public class ChickenTrapLander : NetworkBehaviour
     [SerializeField] private Transform startPoint;
     [SerializeField] private float distance;
     [SerializeField] private ParticleSystem onLandParticle;
+    [SerializeField] private NetworkObject trapPrefab;
+    private ulong currentId;
 
     private static readonly Vector3 offset = new Vector3(0, 0.4f, 0);
 
@@ -32,11 +34,14 @@ public class ChickenTrapLander : NetworkBehaviour
         if (Physics.Raycast(startPoint.position, Vector3.down, out RaycastHit hit, distance,
                 StaticUtilities.GroundLayers))
         {
-            transform.position = hit.point + offset;
+            
+var x = Instantiate(trapPrefab, hit.point + offset, Quaternion.Euler(- 90, 0, 0) );
+x.SpawnWithOwnership(((NetworkBehaviour)_caught).NetworkObject.OwnerClientId);
+            
 
-            Transform cage = transform.GetChild(0);
-            cage.SetParent(null, true);
-            cage.GetComponentInChildren<ChickenTrap>().AttachChicken(_caught);
+           // Transform cage = transform.GetChild(0);
+          //  cage.SetParent(null, true);
+            x.GetComponentInChildren<ChickenTrap>().AttachChicken_Rpc(currentId);
 
             // Tell all clients to play the particle effect at this position
             PlayLandParticleClientRpc(hit.point);
@@ -57,8 +62,11 @@ public class ChickenTrapLander : NetworkBehaviour
     /// Called server-side after spawning. Pass the caught entity's NetworkObjectId
     /// so we can resolve the ITrappable reference reliably.
     /// </summary>
+    /// 
     public void Initialize(Vector3 velocity, ITrappable caught, ulong caughtNetworkId)
     {
+        currentId = caughtNetworkId;
+        
         _rb.linearVelocity = velocity * SpawnSpeed;
         _caught = caught;
         StartCoroutine(Emergency());

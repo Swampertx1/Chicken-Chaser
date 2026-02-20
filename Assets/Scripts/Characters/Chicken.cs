@@ -13,6 +13,7 @@ using Utilities;
 [RequireComponent(typeof(Grounding))]
 public class Chicken : NetworkBehaviour, IControllable, ITrappable, IVisualDetectable
 {
+    private PlayerInput _input;
     public Vector3 currentMoveDirection { get; private set; }
     private Rigidbody rb;
     private Grounding grounding;
@@ -275,6 +276,7 @@ public class Chicken : NetworkBehaviour, IControllable, ITrappable, IVisualDetec
         
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        _input = input;
     }
     
     
@@ -354,12 +356,31 @@ public class Chicken : NetworkBehaviour, IControllable, ITrappable, IVisualDetec
 
     public void OnFreedFromCage()
     {
-        
+        OnFreedFromCage_Rpc();
     }
 
     public void OnPreCapture()
     {
+        OnPreCapture_Rpc();
+    }
+[Rpc(SendTo.Owner, InvokePermission = RpcInvokePermission.Everyone)]
+    private void OnPreCapture_Rpc()
+    {
+        rb.isKinematic = true;
+        enabled = false;
+        _input.actions.Disable();
         
+        Debug.Log("How did we get here");
+        isInvernulable.Value = true;
+    }
+
+    [Rpc(SendTo.Owner, InvokePermission = RpcInvokePermission.Everyone)]
+    private void OnFreedFromCage_Rpc()
+    {
+        rb.isKinematic = false;
+        enabled = true;
+        _input.actions.Enable();
+        isInvernulable.Value = false;
     }
 
     public void AddVisibility(float visibility)

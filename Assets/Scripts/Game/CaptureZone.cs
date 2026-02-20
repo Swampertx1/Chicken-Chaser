@@ -39,9 +39,9 @@ namespace Game
 
                 _caught.OnPreCapture();
 
-                Transform tr = _caught.GetTransform();
+          /*      Transform tr = _caught.GetTransform();
                 tr.SetParent(chickenPoint, true);
-                tr.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                tr.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);  */
 
                 // Trigger the animation on all clients
                 TriggerCaptureAnimClientRpc();

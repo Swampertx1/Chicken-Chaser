@@ -1,12 +1,13 @@
+using Unity.Netcode;
 using UnityEngine;
 using Utilities;
 
 namespace Game
 {
-    public class ChickenTrap : MonoBehaviour
+    public class ChickenTrap : NetworkBehaviour
     {
         [SerializeField] private float decayTime = .8f;
-        private float _currentDecayTime;
+        private NetworkVariable<float> _CurrentDecayTime = new();
         private ITrappable _trappable;
         private Material _myMaterial;
         private bool _isOpened;
@@ -25,9 +26,9 @@ namespace Game
         {
             //When the chicken is freed, its triggering this again, and freeing itself twice because OnTriggerStay runs on the physics ticks
             if (_trappable == null  || !other.attachedRigidbody.TryGetComponent(out ITrappable c) || !c.CanBeTrapped() || _isOpened) return;
-            _currentDecayTime += Time.deltaTime * 2;
-            _myMaterial.SetFloat(StaticUtilities.FillMatID, _currentDecayTime / decayTime);
-            if (_currentDecayTime >= decayTime)
+            _CurrentDecayTime.Value += Time.deltaTime * 2;
+            _myMaterial.SetFloat(StaticUtilities.FillMatID, _CurrentDecayTime.Value / decayTime);
+            if (_CurrentDecayTime.Value >= decayTime)
             {
                 _isOpened = true;
                 FreeChicken();
@@ -36,10 +37,10 @@ namespace Game
 
         private void LateUpdate()
         {
-            if(_isOpened || _currentDecayTime <= 0) return;
-            _currentDecayTime -= Time.deltaTime;
-            if (_currentDecayTime <= 0) _currentDecayTime = 0;
-            _myMaterial.SetFloat(StaticUtilities.FillMatID, _currentDecayTime / decayTime);
+            if(_isOpened || _CurrentDecayTime.Value <= 0) return;
+            _CurrentDecayTime.Value -= Time.deltaTime;
+            if (_CurrentDecayTime.Value <= 0) _CurrentDecayTime.Value = 0;
+            _myMaterial.SetFloat(StaticUtilities.FillMatID, _CurrentDecayTime.Value / decayTime);
         }
 
         private void FreeChicken()
@@ -49,9 +50,13 @@ namespace Game
             Destroy(gameObject);
         }
 
-        public void AttachChicken(ITrappable c)
+  
+
+        [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Server)]
+        public void AttachChicken_Rpc(ulong id)
         {
-            _trappable = c;
+            NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(id, out NetworkObject obj);
+            obj.TryGetComponent(out _trappable);
             PauseObject();
             _trappable.OnCaptured();
         }

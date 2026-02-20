@@ -107,6 +107,8 @@ MonoBehaviour:
   distance: 0.7
   onLandParticle: {fileID: 80139270534471525, guid: 61f8ddca288751145acb1fe5a748a7ee,
     type: 3}
+  trapPrefab: {fileID: -2621667825035807953, guid: ced867df7b9df494cbffb95eaf4b5970,
+    type: 3}
 --- !u!114 &6362080115033701738
 MonoBehaviour:
   m_ObjectHideFlags: 0
