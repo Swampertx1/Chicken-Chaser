@@ -71,8 +71,12 @@ namespace Game
         /// </summary>
         public void ThrowCaptureObject()
         {
-            if (!IsServer) return;
-
+            ThrowFromServer_Rpc();
+        }
+        
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        public void ThrowFromServer_Rpc()
+        {
             GameObject trapGO = Instantiate(trapPrefab.gameObject, chickenPoint.position, Quaternion.identity);
             NetworkObject netObj = trapGO.GetComponent<NetworkObject>();
             netObj.Spawn();

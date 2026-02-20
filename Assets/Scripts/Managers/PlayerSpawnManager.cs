@@ -9,6 +9,8 @@ public class PlayerSpawnManager : NetworkBehaviour
    [SerializeField] private GameSettingsSOAP gameSettingsSOAP;
    [SerializeField] private PlayerSpawnSequence chickenSpawnSequence;
    [SerializeField] private PlayerSpawnSequence humanSpawnSequence;
+
+   
    public override void OnNetworkSpawn()
    {
       base.OnNetworkSpawn();  

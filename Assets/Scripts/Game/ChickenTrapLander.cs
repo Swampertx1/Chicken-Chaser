@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Characters;
 using Game;
@@ -17,6 +18,11 @@ public class ChickenTrapLander : NetworkBehaviour
     [SerializeField] private ParticleSystem onLandParticle;
 
     private static readonly Vector3 offset = new Vector3(0, 0.4f, 0);
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+    }
 
     void FixedUpdate()
     {
@@ -53,7 +59,6 @@ public class ChickenTrapLander : NetworkBehaviour
     /// </summary>
     public void Initialize(Vector3 velocity, ITrappable caught, ulong caughtNetworkId)
     {
-        _rb = GetComponent<Rigidbody>();
         _rb.linearVelocity = velocity * SpawnSpeed;
         _caught = caught;
         StartCoroutine(Emergency());

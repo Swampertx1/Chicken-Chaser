@@ -36,10 +36,10 @@ namespace Characters
             
         }
 
-        private void Start()
+        public override void OnNetworkSpawn()
         {
-            if (IsPlayerControlled || NetworkManager.isActiveAndEnabled) return;
-            SwitchToAI_Rpc();
+            if (NetworkManager.IsServer) 
+                SwitchToAI_Rpc();
         }
 
 

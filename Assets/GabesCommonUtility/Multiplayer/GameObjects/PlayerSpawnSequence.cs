@@ -12,7 +12,8 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         [SerializeField] private Transform[] randomSpawnPoint;
         [SerializeField] private LayerMask occupiedCheckLayer;
         [SerializeField] private float occupiedCheckRadius = 1f;
-        
+        [SerializeField] private Controller controllerPrefab;
+
         
         private bool _spawnCompleted;
 
@@ -24,25 +25,24 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         public void Spawn_ServerRpc(ulong clientId)
         {
            
-            Debug.Log("Spawn_ServerRpc A");
             Transform spawnPoint = GetAvailableSpawnPoint();
-            Debug.Log("Spawn_ServerRpc B");
 
             if (spawnPoint == null)
             {
-                Debug.LogWarning($"All spawn points are occupied. Cannot spawn player for client {clientId}.");
                 NotifySpawnFailed_ClientRpc(clientId);
                 return;
             }
-            Debug.Log("Spawn_ServerRpc C");
 
             // Spawn the player
             NetworkObject player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
             player.SpawnAsPlayerObject(clientId, true);
-            Debug.Log("Spawn_ServerRpc D");
 
+            var clientRpcParams = RpcTarget.Single(clientId, RpcTargetUse.Temp);
+
+            RequestSpawnClient_ClientRpc(player.NetworkObjectId, clientRpcParams);
+
+            
             NotifySpawnSuccess_ClientRpc(clientId, player.NetworkObjectId);
-            Debug.Log("Spawn_ServerRpc E");
 
         }
 
@@ -101,7 +101,21 @@ namespace GabesCommonUtility.Multiplayer.GameObjects
         
         public bool IsCompleted => _spawnCompleted;
 
-        
+        [Rpc(SendTo.SpecifiedInParams, InvokePermission = RpcInvokePermission.Server)]
+        private void RequestSpawnClient_ClientRpc(ulong objectID, RpcParams @params)
+        {
+            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectID, out NetworkObject networkObject))
+            {
+                Instantiate(controllerPrefab).Possess(networkObject.gameObject);
+                
+                //Keep ourselves alive if we've 
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError($"Could not find spawned object with ID {objectID}");
+            }
+        }
         
 
         private void OnDrawGizmosSelected()

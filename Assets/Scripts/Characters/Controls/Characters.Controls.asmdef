@@ -1,0 +1,4 @@
+{
+	"name": "Characters.Controls",
+	"references": ["Unity.InputSystem"]
+}
